@@ -6,8 +6,10 @@ website:
   title: "Wei Ni's Website"
   navbar:
     left:
-      - index.qmd
-      - about.qmd
+      - href: index.qmd
+        text: home
+      - href: about.qmd
+        text: hmm piss
 
 format:
   html:
