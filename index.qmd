@@ -1,17 +1,28 @@
 ---
-title: "Is this the home page"
+title: "Ho Wei Ni"
+image: IMG_2439.jpeg
+toc: false
+about: 
+  template: trestles
+  image-shape: round
+  image-width: 20em
+  links:
+    - text: LinkedIn
+      href: https://www.linkedin.com/in/howeini
+    - text: GitHub
+      href: https://github.com/howeini
+    - text: Email
+      href: mailto::howeini@u.nus.edu
 ---
 
-This is a Quarto website.
+# **Welcome!**
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+Thanks for stopping by my little corner on the internet! My name is Ho Wei Ni, and I'm excited to meet you.
 
-```{r}
-1 + 1
-```
+<hr>
 
-hahahahahahahaah
+# **Education**
 
-update
+I'm currently in Year 2, pursuing a double degree in Business Administration & Communications and New Media at National University of Singapore (NUS).
 
-peepeepooo
+<hr>

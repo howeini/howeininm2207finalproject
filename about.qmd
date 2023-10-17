@@ -1,8 +1,8 @@
 ---
-title: "hmmmmmms"
+title: "Final Project"
 ---
 
-About this site
+This is my final prokect
 
 ```{r}
 1 + 1
