@@ -1,10 +1,5 @@
-/* css styles */
-/*-- scss:defaults --*/
-
-// Colors
-$dark-green: #858E79;
-$light-green: #D1D9CE;
-$cream: #FDFBF7;
-$gray: #64605f;
-$purple: #9158A2;
-$orange: #ad7237;
+/* black underlined hyperlinks */
+a {
+  color: black;
+  font-style: underline;
+}

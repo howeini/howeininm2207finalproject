@@ -4,14 +4,14 @@
     "href": "index.html",
     "title": "Ho Wei Ni",
     "section": "",
-    "text": "Welcome!\nThanks for stopping by my little corner on the internet! My name is Ho Wei Ni, and I’m excited to meet you.\n\n\n\nEducation\nI’m currently in Year 2, pursuing a double degree in Business Administration & Communications and New Media at National University of Singapore (NUS)."
+    "text": "Welcome!\nThanks for stopping by my little corner on the internet! My name is Ho Wei Ni, and I’m excited to meet you.\n\n\n\nEducation\nI’m currently in Year 2, pursuing a double degree in Business Administration & Communications and New Media at National University of Singapore (NUS).\n\n\n\nExperience\nAs a complete beginner to anything coding-related, this website mainly tracks my progress in learning the R programming language through the NM2207 Computational Media Literacy course."
   },
   {
     "objectID": "about.html",
     "href": "about.html",
-    "title": "Final Project",
+    "title": "Our first r-shinylive Quarto document!",
     "section": "",
-    "text": "This is my final prokect\n\n1 + 1\n\n[1] 2"
+    "text": "#| standalone: true\n#| viewerHeight: 600\n\nlibrary(shiny)\n\n# Define UI for app that draws a histogram ----\nui &lt;- fluidPage(\n  \n  # App title ----\n  titlePanel(\"Hello Shiny!\"),\n  \n  # Sidebar layout with input and output definitions ----\n  sidebarLayout(\n    \n    # Sidebar panel for inputs ----\n    sidebarPanel(\n      \n      # Input: Slider for the number of bins ----\n      sliderInput(inputId = \"bins\",\n                  label = \"Number of bins:\",\n                  min = 1,\n                  max = 50,\n                  value = 30)\n      \n    ),\n    \n    # Main panel for displaying outputs ----\n    mainPanel(\n      \n      # Output: Histogram ----\n      plotOutput(outputId = \"distPlot\")\n      \n    )\n  )\n)\n\n# Define server logic required to draw a histogram ----\nserver &lt;- function(input, output) {\n  \n  # Histogram of the Old Faithful Geyser Data ----\n  # with requested number of bins\n  # This expression that generates a histogram is wrapped in a call\n  # to renderPlot to indicate that:\n  #\n  # 1. It is \"reactive\" and therefore should be automatically\n  #    re-executed when inputs (input$bins) change\n  # 2. Its output type is a plot\n  output$distPlot &lt;- renderPlot({\n    \n    x    &lt;- faithful$waiting\n    bins &lt;- seq(min(x), max(x), length.out = input$bins + 1)\n    \n    hist(x, breaks = bins, col = \"#75AADB\", border = \"white\",\n         xlab = \"Waiting time to next eruption (in mins)\",\n         main = \"Histogram of waiting times\")\n    \n  })\n  \n}\n\n# Create Shiny app ----\nshinyApp(ui = ui, server = server)"
   },
   {
     "objectID": "index.html#education-1",
@@ -26,5 +26,12 @@
     "title": "Ho Wei Ni",
     "section": "Experience",
     "text": "Experience\nWengo Analytics | Head Data Scientist | April 2018 - present\nGeoScynce | Chief Analyst | Spet 2012 - April 2018"
+  },
+  {
+    "objectID": "resources.html",
+    "href": "resources.html",
+    "title": "Code-Alongs & Challenges",
+    "section": "",
+    "text": "On Github, you can find all my Code-Along documents & Challenges from Weeks 1-9. I’ve elaborated on my learning points for each week below.\n\nWeek 1\n\n\n\nWeek 2\n\n\n\nWeek 3\n\n\n\nWeek 4\n\n\n\nWeek 5\n\n\n\nWeek 6\n\n\n\nWeek 7\n\n\n\nWeek 8\n\n\n\nWeek 9"
   }
 ]

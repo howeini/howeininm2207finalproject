@@ -26,3 +26,7 @@ Thanks for stopping by my little corner on the internet! My name is Ho Wei Ni, a
 I'm currently in Year 2, pursuing a double degree in Business Administration & Communications and New Media at National University of Singapore (NUS).
 
 <hr>
+
+# **Experience**
+
+As a complete beginner to anything coding-related, this website mainly tracks my progress in learning the [**R programming language**]{.underline} through the NM2207 Computational Media Literacy course.

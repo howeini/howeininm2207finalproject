@@ -1,3 +1,43 @@
 ---
-title: "materials"
+title: "Code-Alongs & Challenges"
 ---
+
+<hr>
+
+On [Github](https://github.com/howeini/NM2207), you can find all my Code-Along documents & Challenges from Weeks 1-9. I've elaborated on my learning points for each week below.
+
+# Week 1
+
+<hr>
+
+# Week 2
+
+<hr>
+
+# Week 3
+
+<hr>
+
+# Week 4
+
+<hr>
+
+# Week 5
+
+<hr>
+
+# Week 6
+
+<hr>
+
+# Week 7
+
+<hr>
+
+# Week 8
+
+<hr>
+
+# Week 9
+
+<hr>
