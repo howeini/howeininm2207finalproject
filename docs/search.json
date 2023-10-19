@@ -4,14 +4,14 @@
     "href": "index.html",
     "title": "Ho Wei Ni",
     "section": "",
-    "text": "Welcome!\nThanks for stopping by my little corner on the internet! My name is Ho Wei Ni, and I’m excited to meet you.\n\n\n\nEducation\nI’m currently in Year 2, pursuing a double degree in Business Administration & Communications and New Media at National University of Singapore (NUS).\n\n\n\nExperience\nAs a complete beginner to anything coding-related, this website mainly tracks my progress in learning the R programming language through the NM2207 Computational Media Literacy course."
+    "text": "Welcome!\nThanks for stopping by my little corner on the internet! My name is Wei Ni, and I’m excited to meet you.\n\n\n\nEducation\nI’m currently in Year 2, pursuing a double degree in Business Administration & Communications and New Media at National University of Singapore (NUS).\n\n\n\nExperience\nAs a complete beginner to anything coding-related, this website mainly tracks my progress in learning the R programming language through the NM2207 Computational Media Literacy course."
   },
   {
     "objectID": "about.html",
     "href": "about.html",
-    "title": "Our first r-shinylive Quarto document!",
+    "title": "Placeholder for Shiny App",
     "section": "",
-    "text": "#| standalone: true\n#| viewerHeight: 600\n\nlibrary(shiny)\n\n# Define UI for app that draws a histogram ----\nui &lt;- fluidPage(\n  \n  # App title ----\n  titlePanel(\"Hello Shiny!\"),\n  \n  # Sidebar layout with input and output definitions ----\n  sidebarLayout(\n    \n    # Sidebar panel for inputs ----\n    sidebarPanel(\n      \n      # Input: Slider for the number of bins ----\n      sliderInput(inputId = \"bins\",\n                  label = \"Number of bins:\",\n                  min = 1,\n                  max = 50,\n                  value = 30)\n      \n    ),\n    \n    # Main panel for displaying outputs ----\n    mainPanel(\n      \n      # Output: Histogram ----\n      plotOutput(outputId = \"distPlot\")\n      \n    )\n  )\n)\n\n# Define server logic required to draw a histogram ----\nserver &lt;- function(input, output) {\n  \n  # Histogram of the Old Faithful Geyser Data ----\n  # with requested number of bins\n  # This expression that generates a histogram is wrapped in a call\n  # to renderPlot to indicate that:\n  #\n  # 1. It is \"reactive\" and therefore should be automatically\n  #    re-executed when inputs (input$bins) change\n  # 2. Its output type is a plot\n  output$distPlot &lt;- renderPlot({\n    \n    x    &lt;- faithful$waiting\n    bins &lt;- seq(min(x), max(x), length.out = input$bins + 1)\n    \n    hist(x, breaks = bins, col = \"#75AADB\", border = \"white\",\n         xlab = \"Waiting time to next eruption (in mins)\",\n         main = \"Histogram of waiting times\")\n    \n  })\n  \n}\n\n# Create Shiny app ----\nshinyApp(ui = ui, server = server)"
+    "text": "Followed this tutorial by TheCoatlessProfessor\n\n#| standalone: true\n#| viewerHeight: 600\n\nlibrary(shiny)\n\n# Define UI for app that draws a histogram ----\nui &lt;- fluidPage(\n  \n  # App title ----\n  titlePanel(\"Hello Shiny!\"),\n  \n  # Sidebar layout with input and output definitions ----\n  sidebarLayout(\n    \n    # Sidebar panel for inputs ----\n    sidebarPanel(\n      \n      # Input: Slider for the number of bins ----\n      sliderInput(inputId = \"bins\",\n                  label = \"Number of bins:\",\n                  min = 1,\n                  max = 50,\n                  value = 30)\n      \n    ),\n    \n    # Main panel for displaying outputs ----\n    mainPanel(\n      \n      # Output: Histogram ----\n      plotOutput(outputId = \"distPlot\")\n      \n    )\n  )\n)\n\n# Define server logic required to draw a histogram ----\nserver &lt;- function(input, output) {\n  \n  # Histogram of the Old Faithful Geyser Data ----\n  # with requested number of bins\n  # This expression that generates a histogram is wrapped in a call\n  # to renderPlot to indicate that:\n  #\n  # 1. It is \"reactive\" and therefore should be automatically\n  #    re-executed when inputs (input$bins) change\n  # 2. Its output type is a plot\n  output$distPlot &lt;- renderPlot({\n    \n    x    &lt;- faithful$waiting\n    bins &lt;- seq(min(x), max(x), length.out = input$bins + 1)\n    \n    hist(x, breaks = bins, col = \"#75AADB\", border = \"white\",\n         xlab = \"Waiting time to next eruption (in mins)\",\n         main = \"Histogram of waiting times\")\n    \n  })\n  \n}\n\n# Create Shiny app ----\nshinyApp(ui = ui, server = server)"
   },
   {
     "objectID": "index.html#education-1",
@@ -32,6 +32,69 @@
     "href": "resources.html",
     "title": "Code-Alongs & Challenges",
     "section": "",
-    "text": "On Github, you can find all my Code-Along documents & Challenges from Weeks 1-9. I’ve elaborated on my learning points for each week below.\n\nWeek 1\n\n\n\nWeek 2\n\n\n\nWeek 3\n\n\n\nWeek 4\n\n\n\nWeek 5\n\n\n\nWeek 6\n\n\n\nWeek 7\n\n\n\nWeek 8\n\n\n\nWeek 9"
+    "text": "On Github, you can find all my Code-Along documents & Challenges from Weeks 1-9. I’ve elaborated on my learning points for each week below."
+  },
+  {
+    "objectID": "resources.html#week-1",
+    "href": "resources.html#week-1",
+    "title": "Code-Alongs & Challenges",
+    "section": "Week 1",
+    "text": "Week 1\n\nLearnt how to create and navigate a R Markdown Document"
+  },
+  {
+    "objectID": "resources.html#week-2",
+    "href": "resources.html#week-2",
+    "title": "Code-Alongs & Challenges",
+    "section": "Week 2",
+    "text": "Week 2\n\nIntroduced to Exploratory Data Analysis, ggplot and Shiny"
+  },
+  {
+    "objectID": "resources.html#week-3",
+    "href": "resources.html#week-3",
+    "title": "Code-Alongs & Challenges",
+    "section": "Week 3",
+    "text": "Week 3\n\nIntroduced to the different type of variables in a data set\nLearnt to create vectors and lists for the different variable types, and how to access the elements\nImplicit and explicit coercion"
+  },
+  {
+    "objectID": "resources.html#week-4",
+    "href": "resources.html#week-4",
+    "title": "Code-Alongs & Challenges",
+    "section": "Week 4",
+    "text": "Week 4\n\nLearnt about Data Wrangling\nThis is arguably one of the more important lessons for our final project"
+  },
+  {
+    "objectID": "resources.html#week-5",
+    "href": "resources.html#week-5",
+    "title": "Code-Alongs & Challenges",
+    "section": "Week 5",
+    "text": "Week 5\n\nLearnt how to write Functions\nLocal and global variables"
+  },
+  {
+    "objectID": "resources.html#week-6",
+    "href": "resources.html#week-6",
+    "title": "Code-Alongs & Challenges",
+    "section": "Week 6",
+    "text": "Week 6\n\nFor loops and While loops"
+  },
+  {
+    "objectID": "resources.html#week-7",
+    "href": "resources.html#week-7",
+    "title": "Code-Alongs & Challenges",
+    "section": "Week 7",
+    "text": "Week 7\n\nVisualising data using ggplot2"
+  },
+  {
+    "objectID": "resources.html#week-8",
+    "href": "resources.html#week-8",
+    "title": "Code-Alongs & Challenges",
+    "section": "Week 8",
+    "text": "Week 8\n\nExploring Shiny"
+  },
+  {
+    "objectID": "resources.html#week-9",
+    "href": "resources.html#week-9",
+    "title": "Code-Alongs & Challenges",
+    "section": "Week 9",
+    "text": "Week 9\n\nIntroduced to different methods of tidying data, scraping data from the Web and collecting data using APIs\nFinal Project Proposal"
   }
 ]

@@ -4,7 +4,10 @@ project:
 
 website:
   title: "Wei Ni's NM2207 Journey"
+  favicon: "giphy.gif"
   navbar:
+    background: light
+    logo: "giphy.gif"
     right:
       - href: index.qmd
         text: About Me

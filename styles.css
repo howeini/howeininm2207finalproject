@@ -3,3 +3,13 @@ a {
   color: black;
   font-style: underline;
 }
+
+/* font size for Nav Bar */
+.navbar-brand{
+  font-size: 1.2rem;
+}
+
+/* font applied to all HTML elements */
+* {
+  font-family: "Verdana", Helvetica, Arial, sans-serif;
+}

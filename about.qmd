@@ -1,10 +1,12 @@
 ---
-title: "Our first r-shinylive Quarto document!"
+title: "Placeholder for Shiny App"
 filters:
   - shinylive
 ---
 
-```{shinylive-r}
+-   Followed [this](https://github.com/coatless-quarto/r-shinylive-demo) tutorial by TheCoatlessProfessor
+
+``` {shinylive-r}
 #| standalone: true
 #| viewerHeight: 600
 
