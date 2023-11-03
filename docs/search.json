@@ -32,7 +32,7 @@
     "href": "resources.html",
     "title": "Code-Alongs & Challenges",
     "section": "",
-    "text": "On Github, you can find all my Code-Along documents & Challenges from Weeks 1-9. I’ve elaborated on my learning points for each week below."
+    "text": "On Github, you can find all my Code-Along documents & Challenges from Weeks 1-9 as well as my diary entries for the Final Project. I’ve elaborated on my learning points for each week below."
   },
   {
     "objectID": "resources.html#week-1",
@@ -222,5 +222,19 @@
     "title": "What factors shape the popularity of songs in today’s diverse music landscape?",
     "section": "Conclusion",
     "text": "Conclusion\n\nWhat are the most important song attributes influencing a song’s popularity?\nWhat is the ideal range for duration of a song?\nWhat genre?\nDo these answers differ based on language and region?"
+  },
+  {
+    "objectID": "resources.html#week-10",
+    "href": "resources.html#week-10",
+    "title": "Code-Alongs & Challenges",
+    "section": "Week 10",
+    "text": "Week 10\n\nExploring data set to see how I can answer the data story question\nExporing plotly to make ggplot interactive\nEmbedding Shiny into Quarto\nPlotting different charts based on inputs in Shiny"
+  },
+  {
+    "objectID": "resources.html#week-11",
+    "href": "resources.html#week-11",
+    "title": "Code-Alongs & Challenges",
+    "section": "Week 11",
+    "text": "Week 11\n\nCrafted the flow of my data story\nInput placeholders for text and visualisations\nExplored how to stack graphs and make carousels\nComputing a correlation matrix\nExploring heat maps and bubble maps\nExploring Random Forest Model"
   }
 ]
