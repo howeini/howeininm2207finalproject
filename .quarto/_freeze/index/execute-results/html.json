@@ -1,7 +1,7 @@
 {
-  "hash": "1a9e94f452091caa150fd4112997a25e",
+  "hash": "8cd0a437419e2e421cb078ada5e8d911",
   "result": {
-    "markdown": "---\ntitle: \"Weekly Submissions\"\n---\n\n\nThis is a Quarto website.\n\nTo learn more about Quarto websites visit <https://quarto.org/docs/websites>.\n\n\n::: {.cell}\n\n```{.r .cell-code}\n1 + 1\n```\n\n::: {.cell-output .cell-output-stdout}\n```\n[1] 2\n```\n:::\n:::\n\n\nnope\n",
+    "markdown": "---\ntitle: \"Ho Wei Ni\"\nimage: IMG_2439.jpeg\ntoc: false\nabout: \n  template: trestles\n  image-shape: round\n  image-width: 20em\n  links:\n    - text: LinkedIn\n      href: https://www.linkedin.com/in/howeini\n    - text: GitHub\n      href: https://github.com/howeini\n    - text: Email\n      href: mailto::howeini@u.nus.edu\n---\n\n\n# **Welcome!**\n\nThanks for stopping by my little corner on the internet! My name is Wei Ni, and I'm excited to meet you.\n\n<hr>\n\n# **Education**\n\nI'm currently in Year 2, pursuing a double degree in Business Administration & Communications and New Media at National University of Singapore (NUS).\n\n<hr>\n\n# **Experience**\n\nAs a complete beginner to anything coding-related, this website mainly tracks my progress in learning the [**R programming language**]{.underline} through the NM2207 Computational Media Literacy course.\n\n# Placeholder for ggplot Visualisation\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(tidyverse)\nggplot(airquality, aes(Temp, Ozone)) +\ngeom_point() +\ngeom_smooth(method = \"loess\")\n```\n:::",
     "supporting": [],
     "filters": [
       "rmarkdown/pagebreak.lua"

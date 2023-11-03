@@ -7,34 +7,42 @@ title: "Code-Alongs & Challenges"
 On [Github](https://github.com/howeini/NM2207), you can find all my Code-Along documents & Challenges from Weeks 1-9. I've elaborated on my learning points for each week below.
 
 ## Week 1
+
 -   Learnt how to create and navigate a R Markdown Document
 
 ## Week 2
+
 -   Introduced to Exploratory Data Analysis, **ggplot** and **Shiny**
 
 ## Week 3
+
 -   Introduced to the different type of variables in a data set
 -   Learnt to create vectors and lists for the different variable types, and how to access the elements
 -   Implicit and explicit coercion
 
 ## Week 4
+
 -   Learnt about Data Wrangling
 -   This is arguably one of the more important lessons for our final project
 
 ## Week 5
+
 -   Learnt how to write Functions
 -   Local and global variables
 
 ## Week 6
-- For loops and While loops
 
+-   For loops and While loops
 
 ## Week 7
-- Visualising data using **ggplot2**
+
+-   Visualising data using **ggplot2**
 
 ## Week 8
-- Exploring **Shiny**
+
+-   Exploring **Shiny**
 
 ## Week 9
-- Introduced to different methods of tidying data, scraping data from the Web and collecting data using APIs
-- Final Project Proposal
+
+-   Introduced to different methods of tidying data, scraping data from the Web and collecting data using APIs
+-   Final Project Proposal

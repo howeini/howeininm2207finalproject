@@ -7,5 +7,11 @@
   },
   "resources.qmd": {
     "resources.html": "da31eb95"
+  },
+  "shiny-old-faithful.qmd": {
+    "shiny-old-faithful.html": "5f9ca2e7"
+  },
+  "test.qmd": {
+    "test.html": "2ff93aa5"
   }
 }

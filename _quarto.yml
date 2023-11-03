@@ -15,6 +15,7 @@ website:
         text: Final Project
       - href: resources.qmd
         text: Class Materials
+      - test.qmd 
 
 format:
   html:

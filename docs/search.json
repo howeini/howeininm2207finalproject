@@ -9,9 +9,9 @@
   {
     "objectID": "about.html",
     "href": "about.html",
-    "title": "Placeholder for Shiny App",
+    "title": "What factors shape the popularity of songs in today’s diverse music landscape?",
     "section": "",
-    "text": "Followed this tutorial by TheCoatlessProfessor\n\n#| standalone: true\n#| viewerHeight: 600\n\nlibrary(shiny)\n\n# Define UI for app that draws a histogram ----\nui &lt;- fluidPage(\n  \n  # App title ----\n  titlePanel(\"Hello Shiny!\"),\n  \n  # Sidebar layout with input and output definitions ----\n  sidebarLayout(\n    \n    # Sidebar panel for inputs ----\n    sidebarPanel(\n      \n      # Input: Slider for the number of bins ----\n      sliderInput(inputId = \"bins\",\n                  label = \"Number of bins:\",\n                  min = 1,\n                  max = 50,\n                  value = 30)\n      \n    ),\n    \n    # Main panel for displaying outputs ----\n    mainPanel(\n      \n      # Output: Histogram ----\n      plotOutput(outputId = \"distPlot\")\n      \n    )\n  )\n)\n\n# Define server logic required to draw a histogram ----\nserver &lt;- function(input, output) {\n  \n  # Histogram of the Old Faithful Geyser Data ----\n  # with requested number of bins\n  # This expression that generates a histogram is wrapped in a call\n  # to renderPlot to indicate that:\n  #\n  # 1. It is \"reactive\" and therefore should be automatically\n  #    re-executed when inputs (input$bins) change\n  # 2. Its output type is a plot\n  output$distPlot &lt;- renderPlot({\n    \n    x    &lt;- faithful$waiting\n    bins &lt;- seq(min(x), max(x), length.out = input$bins + 1)\n    \n    hist(x, breaks = bins, col = \"#75AADB\", border = \"white\",\n         xlab = \"Waiting time to next eruption (in mins)\",\n         main = \"Histogram of waiting times\")\n    \n  })\n  \n}\n\n# Create Shiny app ----\nshinyApp(ui = ui, server = server)"
+    "text": "Explain why this is an important question\nExplain data set\nExplain flow of data story: general understanding of music landscape in January 2022, followed by exploration of what factors shape popularity of songs"
   },
   {
     "objectID": "index.html#education-1",
@@ -96,5 +96,131 @@
     "title": "Code-Alongs & Challenges",
     "section": "Week 9",
     "text": "Week 9\n\nIntroduced to different methods of tidying data, scraping data from the Web and collecting data using APIs\nFinal Project Proposal"
+  },
+  {
+    "objectID": "shiny-old-faithful.html",
+    "href": "shiny-old-faithful.html",
+    "title": "Old Faithful",
+    "section": "",
+    "text": "Air Quality\n\n\n\n\n\nlibrary(tidyverse)\nggplot(airquality, aes(Temp, Ozone)) +\ngeom_point() +\ngeom_smooth(method = \"loess\")\n\n\n\n\nFigure 1: Temperature and ozone level."
+  },
+  {
+    "objectID": "about.html#placeholder-for-ggplot-visualisation",
+    "href": "about.html#placeholder-for-ggplot-visualisation",
+    "title": "What factors shape the popularity of songs in today’s diverse music landscape?",
+    "section": "Placeholder for ggplot Visualisation",
+    "text": "Placeholder for ggplot Visualisation\n\n\n\n\n\nFigure 1: Top 10 Spotify Tracks"
+  },
+  {
+    "objectID": "about.html#placeholder-for-shiny-app",
+    "href": "about.html#placeholder-for-shiny-app",
+    "title": "What factors shape the popularity of songs in today’s diverse music landscape?",
+    "section": "Placeholder for Shiny App",
+    "text": "Placeholder for Shiny App\n\nFollowed this tutorial by TheCoatlessProfessor\nThe histogram below shows the general distribution for each song attributes in January 2022\nThis helps you understand generally what type of songs made it on to the Top 200 charts\nNoted that the graph takes a long time to load, will consider changing to using Shiny.io\nWill incorporate descriptions for each song attribute into the Shiny app\nWill also include follow the Shiny example 6, for a “carousel” to list the other attributes (key, mode, loudness, tempo, duration). Current attributes in this histogram have values 0.0-1.0\n\n#| standalone: true\n#| viewerHeight: 600\n\nlibrary(shiny)\nlibrary(tidyverse)\nlibrary(ggplot2)\nlibrary(scales)\n\n# Define UI ----\nui &lt;- fluidPage(\n  titlePanel(\"Song Attributes\"),\n\n  sidebarLayout(\n    sidebarPanel(\n      checkboxGroupInput(\"sel_attributes\", \n                         label = \"Select the attributes to be displayed\",\n                         choices = c(\"danceability\", \"energy\", \"speechiness\", \"acousticness\", \n                                        \"instrumentalness\", \"liveness\", \"valence\"),\n                         selected = c(\"danceability\"))\n    ),\n    \n    mainPanel(\n      plotOutput(\"hist\")\n    )\n  )\n)\n\n# Define server logic ----\nserver &lt;- function(input, output) {\n  output$hist &lt;- renderPlot({\n    raw &lt;- read_csv(\"Jan2022_Spotify_Weekly_Top_200_Songs_Streaming_Data_by_country_view_view.csv\")\n    spotify &lt;- subset(raw, select = -c(X_1, artists_num, artist_genre, collab, album_num_tracks, pivot))\n    track_attribute1 &lt;- spotify %&gt;%\n      select(track_name, danceability, energy, speechiness, acousticness, instrumentalness, liveness, valence) %&gt;%\n      distinct(track_name, .keep_all = TRUE) %&gt;%\n      pivot_longer(cols= danceability:valence,\n                   names_to = \"attribute\",\n                   values_to = \"value\") %&gt;%\n      filter(attribute %in% as.vector(input$sel_attributes))\n    \n    \n      ggplot(data = track_attribute1, \n             mapping = aes(x = value, fill=attribute)) + \n        geom_histogram(alpha=0.5) +\n        labs(y = \"Frequency\", title = \"Frequency of Attribute\")\n})\n}\n\n# Run the app ----\nshinyApp(ui = ui, server = server)"
+  },
+  {
+    "objectID": "test.html",
+    "href": "test.html",
+    "title": "Test",
+    "section": "",
+    "text": "Next, we add another variable, bar_onclick to the diamonds data frame to add the window.open(\" ... \") part of the onlick command to the bar_google variable. We use the paste0 function and a series of single and double quotes to get the desired format.\nLastly, we map the bar_onclick variable to the onclick aesthetic in our interactive bar chart so that when the user clicks a bar, a corresponding google search for that diamond cut is opened."
+  },
+  {
+    "objectID": "test.html#global-top-10-songs-based-on-week",
+    "href": "test.html#global-top-10-songs-based-on-week",
+    "title": "Test",
+    "section": "Global top 10 songs based on week",
+    "text": "Global top 10 songs based on week"
+  },
+  {
+    "objectID": "test.html#global-top-10-songs-based-on-total-streams-in-month-on-jan.-if-same-number-of-total-streams-arrange-by-weeks-on-chart",
+    "href": "test.html#global-top-10-songs-based-on-total-streams-in-month-on-jan.-if-same-number-of-total-streams-arrange-by-weeks-on-chart",
+    "title": "Test",
+    "section": "",
+    "text": "# A tibble: 260 × 28\n# Groups:   track_name [260]\n   uri    rank artist_names track_name release_date album_cover source peak_rank\n   &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt;      &lt;chr&gt;        &lt;chr&gt;       &lt;chr&gt;      &lt;dbl&gt;\n 1 spot…     1 Glass Anima… Heat Waves 2020-08-06   https://i.… Polyd…         1\n 2 spot…     2 GAYLE        abcdefu    2021-08-13   https://i.… Atlan…         1\n 3 spot…     5 Adele        Easy On Me 2021-11-19   https://i.… Colum…         1\n 4 spot…     9 Ed Sheeran   Shivers    2021-10-29   https://i.… Atlan…         4\n 5 spot…    11 Jaymes Young Infinity   2017-06-23   https://i.… Atlan…        11\n 6 spot…    12 Farruko      Pepas      2021-10-01   https://i.… Sony …         4\n 7 spot…    13 Ed Sheeran   Bad Habits 2021-10-29   https://i.… Atlan…         3\n 8 spot…    15 Doja Cat     Woman      2021-06-25   https://i.… Kemos…         6\n 9 spot…    16 The Weeknd   Sacrifice  2022-01-06   https://i.… XO / …         3\n10 spot…    19 Charlie Puth Light Swi… 2022-01-20   https://i.… Atlan…        19\n# ℹ 250 more rows\n# ℹ 20 more variables: previous_rank &lt;dbl&gt;, weeks_on_chart &lt;dbl&gt;,\n#   streams &lt;dbl&gt;, week &lt;date&gt;, danceability &lt;dbl&gt;, energy &lt;dbl&gt;, key &lt;dbl&gt;,\n#   mode &lt;dbl&gt;, loudness &lt;dbl&gt;, speechiness &lt;dbl&gt;, acousticness &lt;dbl&gt;,\n#   instrumentalness &lt;dbl&gt;, liveness &lt;dbl&gt;, valence &lt;dbl&gt;, tempo &lt;dbl&gt;,\n#   duration &lt;dbl&gt;, country &lt;chr&gt;, region &lt;chr&gt;, language &lt;chr&gt;,\n#   total_streams &lt;dbl&gt;\n\n\n\n\n# A tibble: 260 × 28\n# Groups:   track_name [260]\n   uri    rank artist_names track_name release_date album_cover source peak_rank\n   &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt;      &lt;chr&gt;        &lt;chr&gt;       &lt;chr&gt;      &lt;dbl&gt;\n 1 spot…     8 Carolina Ga… We Don't … 2021-11-19   https://i.… Walt …         8\n 2 spot…     4 Imagine Dra… Enemy (wi… 2021-10-28   https://i.… KIDin…         4\n 3 spot…     6 Elton John,… Cold Hear… 2021-10-22   https://i.… EMI            4\n 4 spot…     3 The Kid LAR… STAY (wit… 2021-07-23   https://i.… Colum…         1\n 5 spot…     7 Lil Nas X, … INDUSTRY … 2021-09-17   https://i.… Colum…         2\n 6 spot…   137 Dímelo Flow… Se Le Ve   2021-08-12   https://i.… Rich …       137\n 7 spot…    10 ACRAZE, Che… Do It To … 2021-08-20   https://i.… Thriv…         9\n 8 spot…    33 Tainy, Bad … Lo Siento… 2021-10-05   https://i.… Neon16        12\n 9 spot…    40 Xamã, Gusta… Malvadão 3 2021-11-30   https://i.… Bagua…        33\n10 spot…    18 Coldplay, B… My Univer… 2021-10-15   https://i.… Parlo…         3\n# ℹ 250 more rows\n# ℹ 20 more variables: previous_rank &lt;dbl&gt;, weeks_on_chart &lt;dbl&gt;,\n#   streams &lt;dbl&gt;, week &lt;date&gt;, danceability &lt;dbl&gt;, energy &lt;dbl&gt;, key &lt;dbl&gt;,\n#   mode &lt;dbl&gt;, loudness &lt;dbl&gt;, speechiness &lt;dbl&gt;, acousticness &lt;dbl&gt;,\n#   instrumentalness &lt;dbl&gt;, liveness &lt;dbl&gt;, valence &lt;dbl&gt;, tempo &lt;dbl&gt;,\n#   duration &lt;dbl&gt;, country &lt;chr&gt;, region &lt;chr&gt;, language &lt;chr&gt;,\n#   total_streams &lt;dbl&gt;"
+  },
+  {
+    "objectID": "test.html#global-data-set-summarised-by-tracks",
+    "href": "test.html#global-data-set-summarised-by-tracks",
+    "title": "Test",
+    "section": "Global data set, summarised by tracks",
+    "text": "Global data set, summarised by tracks"
+  },
+  {
+    "objectID": "test.html#global-data-set-summarised-by-artists",
+    "href": "test.html#global-data-set-summarised-by-artists",
+    "title": "Test",
+    "section": "Global data set, summarised by artists",
+    "text": "Global data set, summarised by artists"
+  },
+  {
+    "objectID": "about.html#general-music-landscape-in-january-2022",
+    "href": "about.html#general-music-landscape-in-january-2022",
+    "title": "What factors shape the popularity of songs in today’s diverse music landscape?",
+    "section": "General Music Landscape in January 2022",
+    "text": "General Music Landscape in January 2022\n\nTrack ranking is determined by sum of total streams\nArtist ranking is determined by sum of total streams\n\n\n\n\n\n\nFigure 1: Overall Top 10 Spotify Tracks and Artists in January 2022\n\n\n\n\nPlaceholder for Shiny App\n\nFollowed this tutorial by TheCoatlessProfessor\nThe histogram below shows the general distribution for each song attributes in January 2022\nThis helps you understand generally what type of songs made it on to the Top 200 charts\nNoted that the graph takes a long time to load, will consider changing to using Shiny.io\nWill incorporate descriptions for each song attribute into the Shiny app\nWill also include follow the Shiny example 6, for a “carousel” to list the other attributes (key, mode, loudness, tempo, duration). Current attributes in this histogram have values 0.0-1.0\n\n#| standalone: true\n#| viewerHeight: 600\n\nlibrary(shiny)\nlibrary(tidyverse)\nlibrary(ggplot2)\nlibrary(scales)\n\n# Define UI ----\nui &lt;- fluidPage(\n  titlePanel(\"Song Attributes\"),\n\n  sidebarLayout(\n    sidebarPanel(\n      checkboxGroupInput(\"sel_attributes\", \n                         label = \"Select the attributes to be displayed\",\n                         choices = c(\"danceability\", \"energy\", \"speechiness\", \"acousticness\", \n                                        \"instrumentalness\", \"liveness\", \"valence\"),\n                         selected = c(\"danceability\"))\n    ),\n    \n    mainPanel(\n      plotOutput(\"hist\")\n    )\n  )\n)\n\n# Define server logic ----\nserver &lt;- function(input, output) {\n  output$hist &lt;- renderPlot({\n    raw &lt;- read_csv(\"Jan2022_Spotify_Weekly_Top_200_Songs_Streaming_Data_by_country_view_view.csv\")\n    spotify &lt;- subset(raw, select = -c(X_1, artists_num, artist_genre, collab, album_num_tracks, pivot))\n    track_attribute1 &lt;- spotify %&gt;%\n      select(track_name, danceability, energy, speechiness, acousticness, instrumentalness, liveness, valence) %&gt;%\n      distinct(track_name, .keep_all = TRUE) %&gt;%\n      pivot_longer(cols= danceability:valence,\n                   names_to = \"attribute\",\n                   values_to = \"value\") %&gt;%\n      filter(attribute %in% as.vector(input$sel_attributes))\n    \n    \n      ggplot(data = track_attribute1, \n             mapping = aes(x = value, fill=attribute)) + \n        geom_histogram(alpha=0.5) +\n        labs(y = \"Frequency\", title = \"Frequency of Attribute\")\n})\n}\n\n# Run the app ----\nshinyApp(ui = ui, server = server)"
+  },
+  {
+    "objectID": "about.html#general-music-landscape-in-january-2022-based-on-global-chart",
+    "href": "about.html#general-music-landscape-in-january-2022-based-on-global-chart",
+    "title": "What factors shape the popularity of songs in today’s diverse music landscape?",
+    "section": "General Music Landscape in January 2022 Based on Global Chart",
+    "text": "General Music Landscape in January 2022 Based on Global Chart\n\nTrack ranking is determined by sum of total streams\nArtist ranking is determined by sum of total streams\n\n\n\n\n\n\nFigure 1: Overall Top 10 Spotify Tracks and Artists in January 2022\n\n\n\n\nPlaceholder for Distribution of Attributes\n\nFollowed this tutorial by TheCoatlessProfessor\nNoted that the graph takes a long time to load, will probably change to using Shiny.io\nThe histogram below shows the general distribution for each song attributes in January 2022\nThis helps you understand generally what type of songs made it on to the Top 200 charts\nWill incorporate descriptions for each song attribute into the Shiny app\nWill also include follow the Shiny example 6, for a “carousel” to list the other attributes (key, mode, loudness, tempo, duration). Current attributes in this histogram have values 0.0-1.0\n\n#| standalone: true\n#| viewerHeight: 600\n\nlibrary(shiny)\nlibrary(tidyverse)\nlibrary(ggplot2)\nlibrary(scales)\n\n# Define UI ----\nui &lt;- fluidPage(\n  titlePanel(\"Song Attributes\"),\n\n  sidebarLayout(\n    sidebarPanel(\n      checkboxGroupInput(\"sel_attributes\", \n                         label = \"Select the attributes to be displayed\",\n                         choices = c(\"danceability\", \"energy\", \"speechiness\", \"acousticness\", \n                                        \"instrumentalness\", \"liveness\", \"valence\"),\n                         selected = c(\"danceability\"))\n    ),\n    \n    mainPanel(\n      plotOutput(\"hist\")\n    )\n  )\n)\n\n# Define server logic ----\nserver &lt;- function(input, output) {\n  output$hist &lt;- renderPlot({\n    raw &lt;- read_csv(\"Jan2022_Spotify_Weekly_Top_200_Songs_Streaming_Data_by_country_view_view.csv\")\n    spotify &lt;- subset(raw, select = -c(X_1, artists_num, artist_genre, collab, album_num_tracks, pivot))\n    track_attribute1 &lt;- spotify %&gt;%\n      select(track_name, danceability, energy, speechiness, acousticness, instrumentalness, liveness, valence) %&gt;%\n      distinct(track_name, .keep_all = TRUE) %&gt;%\n      pivot_longer(cols= danceability:valence,\n                   names_to = \"attribute\",\n                   values_to = \"value\") %&gt;%\n      filter(attribute %in% as.vector(input$sel_attributes))\n    \n    \n      ggplot(data = track_attribute1, \n             mapping = aes(x = value, fill=attribute)) + \n        geom_histogram(alpha=0.5) +\n        labs(y = \"Frequency\", title = \"Frequency of Attribute\")\n})\n}\n\n# Run the app ----\nshinyApp(ui = ui, server = server)"
+  },
+  {
+    "objectID": "about.html#general-music-landscape-based-on-global-chart",
+    "href": "about.html#general-music-landscape-based-on-global-chart",
+    "title": "What factors shape the popularity of songs in today’s diverse music landscape?",
+    "section": "General Music Landscape Based on Global Chart",
+    "text": "General Music Landscape Based on Global Chart\n\nTrack ranking is determined by sum of total streams\nArtist ranking is determined by sum of total streams\n\n\n\n\n\n\nFigure 1: Overall Top 10 Spotify Tracks and Artists in January 2022\n\n\n\n\nPlaceholder for Distribution of Attributes\n\nFollowed this tutorial by TheCoatlessProfessor to embed Shiny app into my website\nWhile the app runs perfectly and quickly on my computer, I’ve noted that the graph takes a long time to load, will probably change to using Shiny.io\nThe histogram below shows the general distribution for each song attributes in January 2022\nThis helps you understand generally what type of songs made it on to the Top 200 charts\nWill incorporate descriptions for each song attribute into the Shiny app\nWill also include follow the Shiny example 6, for a “carousel” to list the other attributes (key, mode, loudness, tempo, duration). Current attributes in this histogram have values 0.0-1.0\n\n#| standalone: true\n#| viewerHeight: 600\n\nlibrary(shiny)\nlibrary(tidyverse)\nlibrary(ggplot2)\nlibrary(scales)\n\n# Define UI ----\nui &lt;- fluidPage(\n  titlePanel(\"Song Attributes\"),\n  \n  sidebarLayout(\n    sidebarPanel(\n      checkboxGroupInput(\"sel_attributes\", \n                         label = \"Select the attributes to be displayed\",\n                         choices = c(\"danceability\", \"energy\", \"speechiness\", \"acousticness\", \n                                     \"instrumentalness\", \"liveness\", \"valence\"),\n                         selected = c(\"danceability\")),\n      \n      sliderInput(\"bins\", \n                  label = \"Number of Bins:\",\n                  min = 1, max = 50, value = 25)\n    ),\n    \n    mainPanel(\n      plotOutput(\"hist\")\n    )\n  )\n)\n\n# Define server logic ----\nserver &lt;- function(input, output) {\n  output$hist &lt;- renderPlot({\n    raw &lt;- read_csv(\"Jan2022_Spotify_Weekly_Top_200_Songs_Streaming_Data_by_country_view_view.csv\")\n    spotify &lt;- subset(raw, select = -c(X_1, artists_num, artist_genre, collab, album_num_tracks, pivot))\n    track_attribute1 &lt;- spotify %&gt;%\n      select(track_name, danceability, energy, speechiness, acousticness, instrumentalness, liveness, valence) %&gt;%\n      distinct(track_name, .keep_all = TRUE) %&gt;%\n      pivot_longer(cols= danceability:valence,\n                   names_to = \"attribute\",\n                   values_to = \"value\") %&gt;%\n      filter(attribute %in% as.vector(input$sel_attributes))\n    \n    \n    ggplot(data = track_attribute1, \n           mapping = aes(x = value, fill=attribute)) + \n      geom_histogram(alpha=0.5, bins = input$bins) +\n      labs(y = \"Frequency\", title = \"Frequency of Attribute\")\n  })\n}\n\n# Run the app ----\nshinyApp(ui = ui, server = server)"
+  },
+  {
+    "objectID": "about.html#introduction-to-data-story",
+    "href": "about.html#introduction-to-data-story",
+    "title": "What factors shape the popularity of songs in today’s diverse music landscape?",
+    "section": "",
+    "text": "Explain why this is an important question\nExplain data set\nExplain flow of data story: general understanding of music landscape in January 2022, followed by exploration of what factors shape popularity of songs"
+  },
+  {
+    "objectID": "about.html#long-term-popularity",
+    "href": "about.html#long-term-popularity",
+    "title": "What factors shape the popularity of songs in today’s diverse music landscape?",
+    "section": "Long-term Popularity",
+    "text": "Long-term Popularity\n\nLong-term popularity is defined as the total streams of a song in the entire month of January, across all charts\nWill be discovering what attributes make a song “timeless”\n\n\nPlaceholder for Correlation Matrix"
+  },
+  {
+    "objectID": "test.html#httpswww.datanovia.comenbloghow-to-create-a-map-using-ggplot2",
+    "href": "test.html#httpswww.datanovia.comenbloghow-to-create-a-map-using-ggplot2",
+    "title": "Test",
+    "section": "https://www.datanovia.com/en/blog/how-to-create-a-map-using-ggplot2/",
+    "text": "https://www.datanovia.com/en/blog/how-to-create-a-map-using-ggplot2/"
+  },
+  {
+    "objectID": "test.html#correlation-matrix",
+    "href": "test.html#correlation-matrix",
+    "title": "Test",
+    "section": "Correlation matrix",
+    "text": "Correlation matrix"
+  },
+  {
+    "objectID": "about.html#short-term-popularity",
+    "href": "about.html#short-term-popularity",
+    "title": "What factors shape the popularity of songs in today’s diverse music landscape?",
+    "section": "Short-term Popularity",
+    "text": "Short-term Popularity\n\nShort-term popularity is analysed by taking rank minus previous rank. Since 1 is the highest ranking, a negative integer would indicate that the song has risen up in the charts while a positive integer would indicate a fall in ranking. The value of the integer would indicate the extent of change i.e. larger integer implies greater change.\nWill also be examining peak rank and weeks on chart\n\n\nPlaceholder for Correlation Matrix"
+  },
+  {
+    "objectID": "about.html#other-factors-kiv",
+    "href": "about.html#other-factors-kiv",
+    "title": "What factors shape the popularity of songs in today’s diverse music landscape?",
+    "section": "Other Factors (KIV)",
+    "text": "Other Factors (KIV)\n\nDoes release_date have any influence? Maybe can see 50 songs with the earliest release_date so that we can see if they have any similar attributes\nArtist genre?"
+  },
+  {
+    "objectID": "about.html#conclusion",
+    "href": "about.html#conclusion",
+    "title": "What factors shape the popularity of songs in today’s diverse music landscape?",
+    "section": "Conclusion",
+    "text": "Conclusion\n\nWhat are the most important song attributes influencing a song’s popularity?\nWhat is the ideal range for duration of a song?\nWhat genre?\nDo these answers differ based on language and region?"
   }
 ]
