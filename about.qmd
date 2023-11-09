@@ -109,10 +109,6 @@ subplot(fig_globaltop10tracks, fig_globaltop10artists,
 ```
 
 ### Placeholder for Distribution of Attributes
-
--   Followed [this](https://github.com/coatless-quarto/r-shinylive-demo) tutorial by TheCoatlessProfessor to embed Shiny app into my website
-
--   **While the app runs perfectly and quickly on my computer, I've noted that the graph takes a long time to load, will probably change to using Shiny.io**
 -   The histogram below shows the general distribution for each song attributes in January 2022
 
 -   This helps you understand generally what type of songs made it on to the Top 200 charts
@@ -121,68 +117,13 @@ subplot(fig_globaltop10tracks, fig_globaltop10artists,
 
 -   Will also include follow the Shiny example 6, for a "carousel" to list the other attributes (key, mode, loudness, tempo, duration). Current attributes in this histogram have values 0.0-1.0
 
-``` {shinylive-r}
-#| standalone: true
-#| viewerHeight: 600
-
-library(shiny)
-library(tidyverse)
-library(ggplot2)
-library(scales)
-
-# Define UI ----
-ui <- fluidPage(
-  titlePanel("Song Attributes"),
-  
-  sidebarLayout(
-    sidebarPanel(
-      checkboxGroupInput("sel_attributes", 
-                         label = "Select the attributes to be displayed",
-                         choices = c("danceability", "energy", "speechiness", "acousticness", 
-                                     "instrumentalness", "liveness", "valence"),
-                         selected = c("danceability")),
-      
-      sliderInput("bins", 
-                  label = "Number of Bins:",
-                  min = 1, max = 50, value = 25)
-    ),
-    
-    mainPanel(
-      plotOutput("hist")
-    )
-  )
-)
-
-# Define server logic ----
-server <- function(input, output) {
-  output$hist <- renderPlot({
-    raw <- read_csv("Jan2022_Spotify_Weekly_Top_200_Songs_Streaming_Data_by_country_view_view.csv")
-    spotify <- subset(raw, select = -c(X_1, artists_num, artist_genre, collab, album_num_tracks, pivot))
-    track_attribute1 <- spotify %>%
-      select(track_name, danceability, energy, speechiness, acousticness, instrumentalness, liveness, valence) %>%
-      distinct(track_name, .keep_all = TRUE) %>%
-      pivot_longer(cols= danceability:valence,
-                   names_to = "attribute",
-                   values_to = "value") %>%
-      filter(attribute %in% as.vector(input$sel_attributes))
-    
-    
-    ggplot(data = track_attribute1, 
-           mapping = aes(x = value, fill=attribute)) + 
-      geom_histogram(alpha=0.5, bins = input$bins) +
-      labs(y = "Frequency", title = "Frequency of Attribute")
-  })
-}
-
-# Run the app ----
-shinyApp(ui = ui, server = server)
-```
+<iframe height="500" width="100%" frameborder="no" src="https://howeini.shinyapps.io/AttributeDist/"> </iframe>
 
 ## Long-term Popularity
 - Long-term popularity is defined as the total streams of a song in the entire month of January, across all charts
 - Will be discovering what attributes make a song "timeless"
 
-### Placeholder for Correlation Matrix
+### Correlation Matrix
 ```{r}
 library(plotly)
 
@@ -201,7 +142,7 @@ heatmap <- plot_ly(
   y = colnames(correlation_matrix),
   z = correlation_matrix,
   type = "heatmap",
-  colorscale = "Viridis",
+  colorscale = "Portland",
   colorbar = list(title = "Correlation"),
   text = correlation_matrix,
   hoverinfo = "text"
@@ -210,6 +151,9 @@ heatmap <- plot_ly(
 # Show the interactive heatmap
 heatmap
 ```
+
+### Global vs. Local
+<iframe height="500" width="100%" frameborder="no" src="https://howeini.shinyapps.io/WorldMap/"> </iframe>
 
 ## Short-term Popularity
 - Short-term popularity is analysed by taking rank minus previous rank. Since 1 is the highest ranking, a negative integer would indicate that the song has risen up in the charts while a positive integer would indicate a fall in ranking. The value of the integer would indicate the extent of change i.e. larger integer implies greater change.
@@ -234,7 +178,7 @@ heatmap <- plot_ly(
   y = colnames(correlation_matrix),
   z = correlation_matrix,
   type = "heatmap",
-  colorscale = "Viridis",
+  colorscale = "Portland",
   colorbar = list(title = "Correlation"),
   text = correlation_matrix,
   hoverinfo = "text"
