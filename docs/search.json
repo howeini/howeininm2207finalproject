@@ -9,9 +9,9 @@
   {
     "objectID": "about.html",
     "href": "about.html",
-    "title": "What factors shape the popularity of songs in today’s diverse music landscape?",
+    "title": "Wei Ni's NM2207 Journey",
     "section": "",
-    "text": "Explain why this is an important question\nExplain data set\nExplain flow of data story: general understanding of music landscape in January 2022, followed by exploration of what factors shape popularity of songs"
+    "text": "Music is a universal thread woven into the fabric of every society, serving as a profound cultural expression. Despite the diversity among communities, music emerges as a common language that unites people.\nBeyond cultural significance, music holds hidden potential, particularly in the realms of business and communication. Unraveling the factors shaping song popularity offers artists and marketers invaluable insights into audience preferences. This understanding enables the creation of content that resonates deeply with diverse communities. From a communication perspective, popular songs act as poignant reflections of collective sentiments, encapsulating societal moods, highlighting emerging trends, and embodying cultural shifts.\n\n\nWe aim to answer the question: what factors shape the popularity of songs in today’s diverse music landscape? A general understanding of music landscape in January 2022 will be provided before we explore the different factors that shape popularity of songs.\n\n\n\n\n\n\nThe following analysis is based on a data set of Spotify’s ‘Weekly Top Songs’ charts for both individual countries and the global landscape throughout January 2022. The raw data set can be found on Kaggle."
   },
   {
     "objectID": "index.html#education-1",
@@ -172,19 +172,19 @@
     "href": "about.html#general-music-landscape-based-on-global-chart",
     "title": "What factors shape the popularity of songs in today’s diverse music landscape?",
     "section": "General Music Landscape Based on Global Chart",
-    "text": "General Music Landscape Based on Global Chart\n\nTrack ranking is determined by sum of total streams\nArtist ranking is determined by sum of total streams\n\n\n\n\n\n\nFigure 1: Overall Top 10 Spotify Tracks and Artists in January 2022\n\n\n\n\nPlaceholder for Distribution of Attributes\n\nThe histogram below shows the general distribution for each song attributes in January 2022\nThis helps you understand generally what type of songs made it on to the Top 200 charts\nWill incorporate descriptions for each song attribute into the Shiny app\nWill also include follow the Shiny example 6, for a “carousel” to list the other attributes (key, mode, loudness, tempo, duration). Current attributes in this histogram have values 0.0-1.0"
+    "text": "General Music Landscape Based on Global Chart\n\nTop 10 ArtistsTop 10 SongsDistribution of Song Attributes\n\n\nCommanding a remarkable total of over 700 million streams, The Weeknd claims the top spot as the most popular Spotify artist. It comes as no surprise that Pop emerges as the predominant genre among these elite top 10 Spotify artists.\n\n\n\n\n\nFigure 1: Top 10 Spotify Artists in January 2022\n\n\n\n\n\n\n\n\nFigure 2: Genres of the Top 10 Spotify Artists\n\n\n\n\n\n\n\n\n\n\nFigure 3: Top 10 Spotify Songs in January 2022\n\n\n\n\n\n\nThe histogram below shows the general distribution for each song attributes in January 2022\nThis helps you understand generally what type of songs made it on to the Top 200 charts\nWill incorporate descriptions for each song attribute into the Shiny app\nWill also include follow the Shiny example 6, for a “carousel” to list the other attributes (key, mode, loudness, tempo, duration). Current attributes in this histogram have values 0.0-1.0"
   },
   {
     "objectID": "about.html#introduction-to-data-story",
     "href": "about.html#introduction-to-data-story",
-    "title": "What factors shape the popularity of songs in today’s diverse music landscape?",
+    "title": "Wei Ni's NM2207 Journey",
     "section": "",
-    "text": "Explain why this is an important question\nExplain data set\nExplain flow of data story: general understanding of music landscape in January 2022, followed by exploration of what factors shape popularity of songs"
+    "text": "Music is a universal thread woven into the fabric of every society, serving as a profound cultural expression. Despite the diversity among communities, music emerges as a common language that unites people.\nBeyond cultural significance, music holds hidden potential, particularly in the realms of business and communication. Unraveling the factors shaping song popularity offers artists and marketers invaluable insights into audience preferences. This understanding enables the creation of content that resonates deeply with diverse communities. From a communication perspective, popular songs act as poignant reflections of collective sentiments, encapsulating societal moods, highlighting emerging trends, and embodying cultural shifts.\nThis data story aims to answer the question of “What factors shape the popularity of songs in today’s diverse music landscape?”. A general understanding of music landscape in January 2022 will be provided before we explore the different factors that shape popularity of songs.\n\n\n\n\n\n\nThe following analysis is based on a data set of Spotify’s ‘Weekly Top Songs’ charts for both individual countries and the global landscape throughout January 2022. The raw data set can be found on Kaggle."
   },
   {
     "objectID": "about.html#long-term-popularity",
     "href": "about.html#long-term-popularity",
-    "title": "What factors shape the popularity of songs in today’s diverse music landscape?",
+    "title": "Wei Ni's NM2207 Journey",
     "section": "Long-term Popularity",
     "text": "Long-term Popularity\n\nLong-term popularity is defined as the total streams of a song in the entire month of January, across all charts\nWill be discovering what attributes make a song “timeless”\n\n\nCorrelation Matrix\n\n\n\n\n\n\n\n\nGlobal vs. Local"
   },
@@ -205,21 +205,21 @@
   {
     "objectID": "about.html#short-term-popularity",
     "href": "about.html#short-term-popularity",
-    "title": "What factors shape the popularity of songs in today’s diverse music landscape?",
+    "title": "Wei Ni's NM2207 Journey",
     "section": "Short-term Popularity",
     "text": "Short-term Popularity\n\nShort-term popularity is analysed by taking rank minus previous rank. Since 1 is the highest ranking, a negative integer would indicate that the song has risen up in the charts while a positive integer would indicate a fall in ranking. The value of the integer would indicate the extent of change i.e. larger integer implies greater change.\nWill also be examining peak rank and weeks on chart\n\n\nPlaceholder for Correlation Matrix"
   },
   {
     "objectID": "about.html#other-factors-kiv",
     "href": "about.html#other-factors-kiv",
-    "title": "What factors shape the popularity of songs in today’s diverse music landscape?",
+    "title": "Wei Ni's NM2207 Journey",
     "section": "Other Factors (KIV)",
     "text": "Other Factors (KIV)\n\nDoes release_date have any influence? Maybe can see 50 songs with the earliest release_date so that we can see if they have any similar attributes\nArtist genre?"
   },
   {
     "objectID": "about.html#conclusion",
     "href": "about.html#conclusion",
-    "title": "What factors shape the popularity of songs in today’s diverse music landscape?",
+    "title": "Wei Ni's NM2207 Journey",
     "section": "Conclusion",
     "text": "Conclusion\n\nWhat are the most important song attributes influencing a song’s popularity?\nWhat is the ideal range for duration of a song?\nWhat genre?\nDo these answers differ based on language and region?"
   },
@@ -236,5 +236,68 @@
     "title": "Code-Alongs & Challenges",
     "section": "Week 11",
     "text": "Week 11\n\nCrafted the flow of my data story\nInput placeholders for text and visualisations\nExplored how to stack graphs and make carousels\nComputing a correlation matrix\nExploring heat maps and bubble maps\nExploring Random Forest Model"
+  },
+  {
+    "objectID": "resources.html#week-12",
+    "href": "resources.html#week-12",
+    "title": "Code-Alongs & Challenges",
+    "section": "Week 12",
+    "text": "Week 12\n\nCompleted the structure for Shiny App #1: Attribute Distribution\nCompleted the structure for Shiny App #2: World Map Visualisation"
+  },
+  {
+    "objectID": "about.html#general-music-landscape-based-on-spotify-global-chart",
+    "href": "about.html#general-music-landscape-based-on-spotify-global-chart",
+    "title": "Wei Ni's NM2207 Journey",
+    "section": "General Music Landscape Based on Spotify Global Chart",
+    "text": "General Music Landscape Based on Spotify Global Chart\n\nTop 10 ArtistsTop 10 SongsDistribution of Song Attributes\n\n\nCommanding a remarkable total of over 700 million streams, The Weeknd claims the top spot as the most popular Spotify artist. It comes as no surprise that Pop emerges as the predominant genre among these elite top 10 Spotify artists.\n\n\n\n\n\nFigure 1: Top 10 Spotify Artists in January 2022\n\n\n\n\n\n\n\n\nFigure 2: Genres of the Top 10 Spotify Artists\n\n\n\n\n\n\n\n\n\n\nFigure 3: Top 10 Spotify Songs in January 2022\n\n\n\n\n\n\nThe histogram below shows the general distribution for each song attributes in January 2022\nThis helps you understand generally what type of songs made it on to the Top 200 charts\nWill incorporate descriptions for each song attribute into the Shiny app\nWill also include follow the Shiny example 6, for a “carousel” to list the other attributes (key, mode, loudness, tempo, duration). Current attributes in this histogram have values 0.0-1.0"
+  },
+  {
+    "objectID": "about.html#introduction",
+    "href": "about.html#introduction",
+    "title": "Wei Ni's NM2207 Journey",
+    "section": "",
+    "text": "Music is a universal thread woven into the fabric of every society, serving as a profound cultural expression. Despite the diversity among communities, music emerges as a common language that unites people.\nBeyond cultural significance, music holds hidden potential, particularly in the realms of business and communication. Unraveling the factors shaping song popularity offers artists and marketers invaluable insights into audience preferences. This understanding enables the creation of content that resonates deeply with diverse communities. From a communication perspective, popular songs act as poignant reflections of collective sentiments, encapsulating societal moods, highlighting emerging trends, and embodying cultural shifts.\n\n\n\n\n\n\n\n\nThe following analysis is based on a data set of Spotify’s ‘Weekly Top Songs’ charts for both individual countries and the global landscape throughout January 2022. The raw data set can be found on Kaggle.\n\n\n\nThis data story aims to answer the question: What factors shape the popularity of songs in today’s diverse music landscape? A general understanding of music landscape in January 2022 will be provided before we explore the different factors that shape popularity of songs."
+  },
+  {
+    "objectID": "about.html#the-importance-of-music",
+    "href": "about.html#the-importance-of-music",
+    "title": "Wei Ni's NM2207 Journey",
+    "section": "",
+    "text": "Music is a universal thread woven into the fabric of every society, serving as a profound cultural expression. Despite the diversity among communities, music emerges as a common language that unites people.\nBeyond cultural significance, music holds hidden potential, particularly in the realms of business and communication. Unraveling the factors shaping song popularity offers artists and marketers invaluable insights into audience preferences. This understanding enables the creation of content that resonates deeply with diverse communities. From a communication perspective, popular songs act as poignant reflections of collective sentiments, encapsulating societal moods, highlighting emerging trends, and embodying cultural shifts.\n\n\n\n\n\n\n\n\nThe following analysis is based on a data set of Spotify’s ‘Weekly Top Songs’ charts for both individual countries and the global landscape throughout January 2022. The raw data set can be found on Kaggle.\n\n\n\nThis data story aims to answer the question: What factors shape the popularity of songs in today’s diverse music landscape? A general understanding of music landscape in January 2022 will be provided before we explore the different factors that shape popularity of songs."
+  },
+  {
+    "objectID": "about.html#music-and-its-importance",
+    "href": "about.html#music-and-its-importance",
+    "title": "Wei Ni's NM2207 Journey",
+    "section": "",
+    "text": "Music is a universal thread woven into the fabric of every society, serving as a profound cultural expression. Despite the diversity among communities, music emerges as a common language that unites people.\nBeyond cultural significance, music holds hidden potential, particularly in the realms of business and communication. Unraveling the factors shaping song popularity offers artists and marketers invaluable insights into audience preferences. This understanding enables the creation of content that resonates deeply with diverse communities. From a communication perspective, popular songs act as poignant reflections of collective sentiments, encapsulating societal moods, highlighting emerging trends, and embodying cultural shifts.\n\n\nWe aim to answer the question: what factors shape the popularity of songs in today’s diverse music landscape? A general understanding of music landscape in January 2022 will be provided before we explore the different factors that shape popularity of songs.\n\n\n\n\n\n\nThe following analysis is based on a data set of Spotify’s ‘Weekly Top Songs’ charts for both individual countries and the global landscape throughout January 2022. The raw data set can be found on Kaggle."
+  },
+  {
+    "objectID": "about.html#general-music-landscape-of-january-2022",
+    "href": "about.html#general-music-landscape-of-january-2022",
+    "title": "Wei Ni's NM2207 Journey",
+    "section": "General Music Landscape of January 2022",
+    "text": "General Music Landscape of January 2022\n\nTop 10 ArtistsTop 10 SongsDistribution of Song Attributes\n\n\n\nThe Weeknd claims the top spot, commanding a remarkable total of over 700 million streams\nPop is the predominant genre among these elite top 10 Spotify artists.\n\n\n\n\n\n\nFigure 1: Top 10 Spotify Artists in January 2022\n\n\n\n\n\n\n\n\nFigure 2: Genres of the Top 10 Spotify Artists\n\n\n\n\n\n\nAn intriguing observation arises as we note that the creators behind the top 10 songs differ from the artists in the top 10 list\nThis variance may suggest a distinction between short-term and long-term popularity, given that the artists behind these songs seem to have achieved recognition primarily through a single hit\n\n\n\n\n\n\nFigure 3: Top 10 Spotify Songs in January 2022\n\n\n\n\n\n\nExplore the interface below to understand the general distribution for different song attributes\nThe source for these attributes’ descriptions can be found here\n\n\n\n\nIn general, it appears that the popular songs in the landscape of January 2022 are\n\nDanceable\nHave moderate to high energy\nHave little speech element\nNot very acoustic\nVery likely contains vocals\nUnlikely to be performed live\nCould sound positive or negative\n\nThese songs are also likely to be\n\nIn the C♯/D♭ key\nOn the Major scale\nOf normal volume\nHave varied pace\nAround 3 minutes long"
+  },
+  {
+    "objectID": "about.html#top-10-songs",
+    "href": "about.html#top-10-songs",
+    "title": "Wei Ni's NM2207 Journey",
+    "section": "Top 10 Songs",
+    "text": "Top 10 Songs\n\n\n\n\n\nFigure 3: Top 10 Spotify Songs in January 2022"
+  },
+  {
+    "objectID": "about.html#distribution-of-song-attributes",
+    "href": "about.html#distribution-of-song-attributes",
+    "title": "Wei Ni's NM2207 Journey",
+    "section": "Distribution of Song Attributes",
+    "text": "Distribution of Song Attributes\n\nThe histogram below shows the general distribution for each song attributes in January 2022\nThis helps you understand generally what type of songs made it on to the Top 200 charts\nWill incorporate descriptions for each song attribute into the Shiny app\nWill also include follow the Shiny example 6, for a “carousel” to list the other attributes (key, mode, loudness, tempo, duration). Current attributes in this histogram have values 0.0-1.0\n\n\n\n:::"
+  },
+  {
+    "objectID": "about.html#the-universality-of-music",
+    "href": "about.html#the-universality-of-music",
+    "title": "Wei Ni's NM2207 Journey",
+    "section": "",
+    "text": "Music is a universal thread woven into the fabric of every society, serving as a profound cultural expression. Despite the diversity among communities, music emerges as a common language that unites people.\nBeyond cultural significance, music holds hidden potential, particularly in the realms of business and communication. Unraveling the factors shaping song popularity offers artists and marketers invaluable insights into audience preferences. This understanding enables the creation of content that resonates deeply with diverse communities. From a communication perspective, popular songs act as poignant reflections of collective sentiments, encapsulating societal moods, highlighting emerging trends, and embodying cultural shifts.\n\n\nWe aim to answer the question: what factors shape the popularity of songs in today’s diverse music landscape? A general understanding of music landscape in January 2022 will be provided before we explore the different factors that shape popularity of songs.\n\n\n\n\n\n\nThe following analysis is based on a data set of Spotify’s ‘Weekly Top Songs’ charts for both individual countries and the global landscape throughout January 2022. The raw data set can be found on Kaggle."
   }
 ]

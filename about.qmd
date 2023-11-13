@@ -43,8 +43,9 @@ spotify <- subset(raw, select = -c(X_1, artists_num, collab, album_num_tracks, p
 
 ::: panel-tabset
 ## Top 10 Artists
-- **The Weeknd** claims the top spot, commanding a remarkable total of over 700 million streams
-- **Pop** is the predominant genre among these elite top 10 Spotify artists.
+
+-   **The Weeknd** claims the top spot, commanding a remarkable total of over 700 million streams
+-   **Pop** is the predominant genre among these elite top 10 Spotify artists.
 
 ```{r}
 #| out.width: "90%"
@@ -116,8 +117,10 @@ genre_wc
 ```
 
 ## Top 10 Songs
-- An intriguing observation arises as we note that **the creators behind the top 10 songs differ from the artists in the top 10 list**
-- This variance may suggest a **distinction between short-term and long-term popularity**, given that the artists behind these songs seem to have achieved recognition primarily through a single hit
+
+-   An intriguing observation arises as we note that **the creators behind the top 10 songs differ from the artists in the top 10 list**
+-   This variance may suggest a **distinction between short-term and long-term popularity**, given that the artists behind these songs seem to have achieved recognition primarily through a single hit
+
 ```{r}
 #| out.width: "90%"
 #| label: fig-top10songs
@@ -161,17 +164,27 @@ fig_globaltop10tracks
 
 ## Distribution of Song Attributes
 
--   The histogram below shows the general distribution for each song attributes in January 2022
+-   Explore the interface below to understand the general distribution for different song attributes
+-   The source for these attributes' descriptions can be found [here](https://developer.spotify.com/documentation/web-api/reference/get-several-audio-features)
 
--   This helps you understand generally what type of songs made it on to the Top 200 charts
-
--   Will incorporate descriptions for each song attribute into the Shiny app
-
--   Will also include follow the Shiny example 6, for a "carousel" to list the other attributes (key, mode, loudness, tempo, duration). Current attributes in this histogram have values 0.0-1.0
-
-<iframe height="500" width="100%" frameborder="no" src="https://howeini.shinyapps.io/AttributeDist/">
+<iframe height="800" width="100%" frameborder="no" src="https://howeini.shinyapps.io/AttributeDist/">
 
 </iframe>
+
+-   In general, it appears that the popular songs in the landscape of January 2022 are
+    -   Danceable
+    -   Have moderate to high energy
+    -   Have little speech element
+    -   Not very acoustic
+    -   Very likely contains vocals
+    -   Unlikely to be performed live
+    -   Could sound positive or negative
+-   These songs are also likely to be
+    -   In the C♯/D♭ key
+    -   On the Major scale
+    -   Of normal volume
+    -   Have varied pace
+    -   Around 3 minutes long
 :::
 
 ## Long-term Popularity

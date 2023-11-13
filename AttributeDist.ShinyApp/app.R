@@ -1,6 +1,8 @@
 library(shiny)
 library(tidyverse)
 library(ggplot2)
+library(markdown)
+library(plotly)
 
 # Attribute descriptions data frame
 attribute_descriptions <- data.frame(
@@ -43,64 +45,193 @@ attribute_descriptions <- data.frame(
   )
 )
 
-# Define UI ----
-ui <- fluidPage(
-  h1("Select the attributes to be displayed"),
-  
-  fluidRow(
-    
-    column(width = 2,
-           hr(),
-           checkboxGroupInput("sel_attributes", 
-                              label = h4("Song Attributes:"),
-                              choices = c("danceability", "energy", "speechiness", "acousticness", 
-                                          "instrumentalness", "liveness", "valence"),
-                              selected = c("danceability")
-                              )),
-    column(width = 5,
-           hr(),
-           h3("Explore the data at different levels of detail"),
-           p("A", span("smaller", style = "color:red; font-size:14px; text-decoration: underline"), 
-           "number of bins can provide an overview of the general shape of the distribution, 
-             while a", span("larger", style = "color:red; font-size:14px; text-decoration: underline"), 
-           "number of bins can reveal smaller peaks, valleys, or outliers."),
-           sliderInput("bins", 
-                       label = h4("Number of Bins:"),
-                       min = 1, max = 50, value = 25)
-           ),
-           
-    column(width = 5,
-           hr(),
-           h3("Unsure on how to interpret a histogram?"),
-           checkboxInput("show_interpretation",
-                         label = ("Show how to interpret a histogram"),
-                         value = FALSE),
-           htmlOutput("interpretation")
-           )
-    ),
-  
-  hr(),
-  
-  fluidRow(
-    column(width = 7,
-           plotOutput("hist")),
-    
-    column(width = 5,
-           h4("Here is a description of your selected attributes:"),
-           p("Each attribute's value ranges from 0.0 to 1.0, with 0.0 indicating the minimum and 1.0 indicating the maximum value."),
-           p("For example, for the danceability attribute, 0.0 means least danceable, and 1.0 means most danceable."),
-           br(),
-           tableOutput("description"))
-    ))
 
+
+
+# Define UI ----
+ui <- navbarPage("Attributes",
+                 tabPanel("Group A",
+                   fluidPage(
+                     h1("Group A: Attributes with values ranging from 0.0-1.0"),
+                     
+                     fluidRow(
+                       
+                       column(width = 2,
+                              hr(),
+                              checkboxGroupInput("sel_attributes", 
+                                                 label = h4("Song Attributes:"),
+                                                 choices = c("danceability", "energy", "speechiness", "acousticness", 
+                                                             "instrumentalness", "liveness", "valence"),
+                                                 selected = c("danceability")
+                              )),
+                       column(width = 5,
+                              hr(),
+                              h3("Explore the data at different levels of detail"),
+                              p("A", span("smaller", style = "color:red; font-size:14px; text-decoration: underline"), 
+                                "number of bins can provide an overview of the general shape of the distribution, 
+                                while a", span("larger", style = "color:red; font-size:14px; text-decoration: underline"), 
+                                "number of bins can reveal smaller peaks, valleys, or outliers."),
+                              sliderInput("bins", 
+                                          label = h4("Number of Bins:"),
+                                          min = 1, max = 50, value = 25)
+                       ),
+                       
+                       column(width = 5,
+                              hr(),
+                              h3("Unsure on how to interpret a histogram?"),
+                              checkboxInput("show_interpretation",
+                                            label = ("Show how to interpret a histogram"),
+                                            value = FALSE),
+                              htmlOutput("interpretation")
+                       )
+                     ),
+                     
+                     hr(),
+                     
+                     fluidRow(
+                       column(width = 7,
+                              plotOutput("hist")),
+                       
+                       column(width = 5,
+                              h4("Here is a description of your selected attributes:"),
+                              p("Each attribute's value ranges from 0.0 to 1.0, with 0.0 indicating the minimum and 1.0 indicating the maximum value."),
+                              p("For example, for the danceability attribute, 0.0 means least danceable, and 1.0 means most danceable."),
+                              br(),
+                              tableOutput("description"))
+                     ))
+                 ),
+                 
+                 
+                 
+                 
+                 
+                 
+                 
+                 
+                 
+                 tabPanel("Group B",
+                   fluidPage(
+                     h1("Group B: Other Attributes"),
+                     
+                     fluidRow(
+          
+                       column(width = 6,
+                              hr(),
+                              h3("Key"),
+                              p("Represents what key the song is in"),
+                              plotlyOutput("key_bar")),
+                       
+                       column(width = 6,
+                              hr(),
+                              h3("Mode"),
+                              p("Indicates the modality of a song, the type of scale from which its melodic content is derived"),
+                              plotlyOutput("mode_pie"))),
+                     
+                     hr(),
+                     
+                     fluidRow(
+                       
+                       
+                         tabsetPanel(
+                           type = "tabs",
+                           tabPanel(
+                             "Loudness",
+                             fluidRow(
+                               column(
+                                 width = 8,
+                                 br(),
+                                 sliderInput("bins_loud", 
+                                             label = h4("Number of Bins:"),
+                                             min = 1, max = 50, value = 25),
+                                 br(),
+                                 plotlyOutput("loud_hist")
+                               ),
+                               column(
+                                 width = 4,
+                                 br(),
+                                 br(),
+                                 br(),
+                                 br(),
+                                 br(),
+                                 br(),
+                                 br(),
+                                 br(),
+                                 h3("Description of Loudness"),
+                                 htmlOutput("loud_desc")
+                               )
+                             )
+                           ),
+                           tabPanel(
+                             "Tempo",
+                             fluidRow(
+                               column(
+                                 width = 8,
+                                 br(),
+                                 sliderInput("bins_tempo", 
+                                             label = h4("Number of Bins:"),
+                                             min = 1, max = 50, value = 25),
+                                 br(),
+                                 plotlyOutput("tempo_hist")
+                               ),
+                               column(
+                                 width = 4,
+                                 br(),
+                                 br(),
+                                 br(),
+                                 br(),
+                                 br(),
+                                 br(),
+                                 br(),
+                                 br(),
+                                 h3("Description of Tempo"),
+                                 htmlOutput("tempo_desc")
+                               )
+                             )
+                           ),
+                           tabPanel(
+                             "Duration",
+                             fluidRow(
+                               column(
+                                 width = 8,
+                                 br(),
+                                 sliderInput("bins_dur", 
+                                             label = h4("Number of Bins:"),
+                                             min = 1, max = 50, value = 25),
+                                 br(),
+                                 plotlyOutput("dur_hist")
+                               ),
+                               column(
+                                 width = 4,
+                                 br(),
+                                 br(),
+                                 br(),
+                                 br(),
+                                 br(),
+                                 br(),
+                                 br(),
+                                 br(),
+                                 h4("Tip: Use the box select tool to zoom in and explore the outliers!"),
+                                 h3("Description of Duration"),
+                                 htmlOutput("dur_desc")
+                               )
+                             )
+                           )
+                         )
+                       )
+                     )
+                    )
+                   )
+                 
+
+                       
 
 
 # Define server logic ----
+raw <- read_csv("Jan2022_Spotify_Weekly_Top_200_Songs_Streaming_Data_by_country_view_view.csv")
+spotify <- raw %>% select(-X_1, -artists_num, -artist_genre, -collab, -album_num_tracks, -pivot)
+
 server <- function(input, output) {
   output$hist <- renderPlot({
-    raw <- read_csv("Jan2022_Spotify_Weekly_Top_200_Songs_Streaming_Data_by_country_view_view.csv")
-    spotify <- raw %>% select(-X_1, -artists_num, -artist_genre, -collab, -album_num_tracks, -pivot)
-    
     track_attribute1 <- spotify %>%
       select(track_name, danceability, energy, speechiness, acousticness, instrumentalness, liveness, valence) %>%
       distinct(track_name, .keep_all = TRUE) %>%
@@ -150,6 +281,115 @@ server <- function(input, output) {
     } else {
       NULL
     }
+  })
+  
+  
+  
+  
+  
+  
+  track_attribute2 <- spotify %>%
+    select(track_name, key, mode) %>%
+    distinct(track_name, .keep_all = TRUE)
+  
+  # Function to map integers to pitch names
+  map_to_pitch <- function(key) {
+    pitches <- c("C", "C♯/D♭", "D", "D♯/E♭", "E", "F", "F♯/G♭", "G", "G♯/A♭", "A", "A♯/B♭", "B")
+    return(pitches[key + 1])
+  }
+  
+  # Function to map integers to pitch names
+  map_to_mode <- function(scale) {
+    modes <- c("Minor", "Major")
+    return(modes[scale + 1])
+  }
+  
+  # Apply the function to create new columns
+  track_attribute2$key_alphabet <- sapply(track_attribute2$key, map_to_pitch)
+  track_attribute2$mode_word <- sapply(track_attribute2$mode, map_to_mode)
+  
+  track_attribute2 <- na.omit(track_attribute2)
+  
+  output$key_bar <- renderPlotly({
+    kb <- ggplot(track_attribute2, aes(x = key_alphabet)) + 
+      geom_bar() + 
+      labs(x= "Key", y="Count", title = "Count of Key") + 
+      theme(axis.text.x = element_text(family = "Arial Unicode MS"))
+    
+    kb <- ggplotly(kb, tooltip = "y")
+    
+    kb
+  })
+  
+  output$mode_pie <- renderPlotly({
+    mb <- track_attribute2 %>%
+      count(mode_word) %>%
+      plot_ly(labels = ~mode_word, values = ~n, type = 'pie') %>%
+      layout(title = "Distribution of Mode", showlegend = TRUE) %>%
+      add_trace(marker = list(colors = c('grey', 'lightgreen')))
+    
+    mb
+  })
+  
+  
+  track_attribute3 <- spotify %>%
+    select(track_name, loudness, tempo, duration) %>%
+    distinct(track_name, .keep_all = TRUE) %>%
+    pivot_longer(cols= loudness:duration,
+                 names_to = "attribute",
+                 values_to = "value")
+  
+  output$loud_hist <- renderPlotly({
+    
+    lh <- ggplot(data = track_attribute3 %>% filter(attribute=="loudness"), 
+           mapping = aes(x = value)) + 
+      geom_histogram(bins = input$bins_loud) +
+      labs(x = "Value (dB)", y = "Frequency", title = "Frequency of Loudness")
+    
+    ggplotly(lh, height = 600)  # Adjust the height value as needed
+  })
+  
+  output$loud_desc <- renderUI({
+    text <- "
+            <ul> <li> The overall loudness of a track in decibels (dB) </li>
+            <li> Loudness is the quality of a sound that is the primary psychological correlate of physical strength (amplitude) </li>
+            <li> Loudness values are averaged across the entire track </li>
+            <li> This makes it useful for comparing relative loudness of tracks </li>
+            <li> Values typically range between -60 and 0 dB </li> 
+            <li> The more negative the value, the louder the song is </li> </ul>"
+    HTML(text)
+  })
+  
+  output$tempo_hist <- renderPlotly({
+    
+    th <- ggplot(data = track_attribute3 %>% filter(attribute=="tempo"), 
+           mapping = aes(x = value)) + 
+      geom_histogram(bins = input$bins_tempo) +
+      labs(x = "Value (BPM)", y = "Frequency", title = "Frequency of Tempo")
+    
+    ggplotly(th, height = 600)  # Adjust the height value as needed
+  })
+  
+  output$tempo_desc <- renderText({
+    text <- "<ul> <li> The overall estimated tempo of a track in beats per minute (BPM) </li>
+             <li> In musical terminology, tempo is the speed or pace of a given piece </li> 
+             <li> This is directly derived from the average beat duration </li> </ul>"
+    HTML(text)
+  })
+  
+  output$dur_hist <- renderPlotly({
+    
+    dh <- ggplot(data = track_attribute3 %>% filter(attribute=="duration") %>% mutate(sec = value/1000), 
+           mapping = aes(x = sec)) + 
+      geom_histogram(bins = input$bins_dur) +
+      labs(x = "Value (seconds)", y = "Frequency", title = "Frequency of Duration")
+    
+    ggplotly(dh, height = 600)  # Adjust the height value as needed
+  })
+  
+  output$dur_desc <- renderText({
+    text <- "<ul> <li> The song duration in seconds  </li> </ul>"
+    HTML(text)
   })
   
 }

@@ -5,7 +5,7 @@ account: howeini
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 10455837
-bundleId: 7906207
+bundleId: 7921261
 url: https://howeini.shinyapps.io/AttributeDist/
 version: 1
 asMultiple: FALSE

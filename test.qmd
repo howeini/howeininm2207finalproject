@@ -378,3 +378,125 @@ spotify <- subset(raw, select = -c(X_1, artists_num, artist_genre, collab, album
         geom_histogram(aes(y = ..prop..),alpha=0.5) +
         labs(y = "Frequency", title = "Frequency of Attribute")
 ```
+
+# Code for top10 subplot
+
+```{r}
+#| out.width: "90%"
+#| label: fig-top101
+#| fig-cap: Overall Top 10 Spotify Tracks and Artists in January 2022
+
+# Manipulate data set to obtain top 10 tracks from the "Global" charts
+
+globaltop10tracks <- spotify %>% 
+  filter(country == "Global") %>% 
+  group_by(track_name) %>% 
+  mutate(track_total_streams = sum(streams)) %>% 
+  distinct(track_name, .keep_all = TRUE) %>% 
+  select(uri, track_name, artist_names, album_cover, track_total_streams) %>%
+  arrange(desc(track_total_streams)) %>%
+  head(globaltop10tracks, n=10)
+
+globaltop10artists <- spotify %>% 
+  filter(country == "Global") %>% 
+  group_by(artist_individual) %>% 
+  mutate(artist_total_streams = sum(streams)) %>% 
+  distinct(artist_individual, .keep_all = TRUE) %>%
+  select(artist_individual, artist_id, artist_img, artist_total_streams) %>%
+  arrange(desc(artist_total_streams)) %>%
+  head(globaltop10artists, n=10)
+
+# Create Top 10 Tracks plotly graph
+fig_globaltop10tracks <- ggplot(globaltop10tracks, 
+            aes(x = track_total_streams, 
+                y = fct_reorder(track_name, track_total_streams),
+                customdata = uri,
+                text = paste("</br>Total Streams:", track_total_streams,
+                             "</br>Artists:", str_wrap(artist_names, width = 50),
+                              "</br>Track Link: <a href=", uri, 
+                             " target='_blank'>", uri, "</a>"))) +
+  geom_col() +
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_text(size = 8)) + 
+  labs(x="Total Streams")
+
+fig_globaltop10tracks <- ggplotly(fig_globaltop10tracks, tooltip = "text") %>%
+  layout(hoverlabel = list(bgcolor = "white", 
+                           bordercolor = "black",
+                           align = "left",
+                           persistent = TRUE),
+         hovertemplate = "%{text}<extra></extra>")
+
+
+# Create Top 10 Artist plotly graph
+fig_globaltop10artists <- ggplot(globaltop10artists, 
+            aes(x = artist_total_streams, 
+                y = fct_reorder(artist_individual, artist_total_streams),
+                customdata = artist_id,
+                text = paste("</br>Total Streams:",artist_total_streams,
+                             "</br>Artist Link: <a href=", artist_id, 
+                             " target='_blank'>", artist_id, "</a>"))) +
+  geom_col() +
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_text(size = 8)) + 
+  labs(x="Total Streams")
+
+fig_globaltop10artists <- ggplotly(fig_globaltop10artists, tooltip = "text") %>%
+  layout(hoverlabel = list(bgcolor = "white", 
+                           bordercolor = "black",
+                           align = "left",
+                           persistent = TRUE),
+         hovertemplate = "%{text}<extra></extra>")
+
+subplot(fig_globaltop10tracks, fig_globaltop10artists, 
+        nrows = 2, widths = 1, margin =0.02,
+        shareX = TRUE) %>% 
+        layout(title = 'Top 10 Tracks and Artists in January 2022', position = "top center")
+```
+
+```{r}
+library(tidyverse)
+raw <- read_csv("Jan2022_Spotify_Weekly_Top_200_Songs_Streaming_Data_by_country_view_view.csv")
+
+spotify <- subset(raw, select = -c(X_1, artists_num, artist_genre, collab, album_num_tracks, pivot))
+
+track_attribute2 <- spotify %>%
+    select(track_name, key, mode) %>%
+    distinct(track_name, .keep_all = TRUE)
+
+  # Function to map integers to pitch names
+  map_to_pitch <- function(key) {
+    pitches <- c("C", "C♯/D♭", "D", "D♯/E♭", "E", "F", "F♯/G♭", "G", "G♯/A♭", "A", "A♯/B♭", "B")
+    return(pitches[key + 1])
+  }
+  
+  # Function to map integers to pitch names
+  map_to_mode <- function(scale) {
+    modes <- c("Minor", "Major")
+    return(modes[scale + 1])
+  }
+  
+  # Apply the function to create new columns
+  track_attribute2$key_alphabet <- sapply(track_attribute2$key, map_to_pitch)
+  track_attribute2$mode_word <- sapply(track_attribute2$mode, map_to_mode)
+  
+  track_attribute2 <- na.omit(track_attribute2)
+
+
+kb <- ggplot(track_attribute2, aes(x = key_alphabet)) + 
+      geom_bar() + 
+      labs(x= "Key", y="Count") + 
+      theme(axis.text.x = element_text(family = "Arial Unicode MS"))
+
+kb <- ggplotly(kb, tooltip = "y")
+kb
+
+
+mb <- track_attribute2 %>%
+  count(mode_word) %>%
+  plot_ly(labels = ~mode_word, values = ~n, type = 'pie') %>%
+  layout(title = "Pie Chart of Mode Distribution", showlegend = TRUE) %>%
+  add_trace(marker = list(colors = c('grey', 'lightgreen')))
+mb
+
+```
