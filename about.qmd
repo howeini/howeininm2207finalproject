@@ -1,5 +1,4 @@
 ---
-title: "What factors shape the popularity of songs in today's diverse music landscape?"
 filters:
   - shinylive
 execute: 
@@ -7,10 +6,20 @@ execute:
   echo: false
   warning: false
 ---
-## Introduction to Data Story
--   Explain why this is an important question
--   Explain data set
--   Explain flow of data story: general understanding of music landscape in January 2022, followed by exploration of what factors shape popularity of songs
+
+## The Universality of Music
+
+Music is a universal thread woven into the fabric of every society, serving as a profound cultural expression. Despite the diversity among communities, music emerges as a common language that unites people.
+
+Beyond cultural significance, music holds hidden potential, particularly in the realms of business and communication. Unraveling the factors shaping song popularity offers artists and marketers invaluable insights into audience preferences. This understanding enables the creation of content that resonates deeply with diverse communities. From a communication perspective, popular songs act as poignant reflections of collective sentiments, encapsulating societal moods, highlighting emerging trends, and embodying cultural shifts.
+
+### Introduction to Data Story
+
+We aim to answer the question: [**what factors shape the popularity of songs in today's diverse music landscape?**]{.underline} A general understanding of music landscape in January 2022 will be provided before we explore the different factors that shape popularity of songs.
+
+::: {.callout-note appearance="simple"}
+*The following analysis is based on a data set of Spotify's 'Weekly Top Songs' charts for both individual countries and the global landscape throughout January 2022. The raw data set can be found on [Kaggle](https://www.kaggle.com/datasets/yelexa/spotify200).*
+:::
 
 ```{r}
 # Load library
@@ -27,18 +36,92 @@ library(slickR) # For ggplot Carousel
 raw <- read_csv("Jan2022_Spotify_Weekly_Top_200_Songs_Streaming_Data_by_country_view_view.csv")
 
 # Remove unnecessary columns
-spotify <- subset(raw, select = -c(X_1, artists_num, artist_genre, collab, album_num_tracks, pivot))
+spotify <- subset(raw, select = -c(X_1, artists_num, collab, album_num_tracks, pivot))
 ```
 
-## General Music Landscape Based on Global Chart
+## General Music Landscape of January 2022
 
--   Track ranking is determined by sum of total streams
--   Artist ranking is determined by sum of total streams
+::: panel-tabset
+## Top 10 Artists
+- **The Weeknd** claims the top spot, commanding a remarkable total of over 700 million streams
+- **Pop** is the predominant genre among these elite top 10 Spotify artists.
 
 ```{r}
 #| out.width: "90%"
-#| label: fig-top10
-#| fig-cap: Overall Top 10 Spotify Tracks and Artists in January 2022
+#| label: fig-top10artist
+#| fig-cap: Top 10 Spotify Artists in January 2022
+
+# Manipulate data set to obtain top 10 tracks from the "Global" charts
+
+globaltop10artists <- spotify %>% 
+  filter(country == "Global") %>% 
+  group_by(artist_individual) %>% 
+  mutate(artist_total_streams = sum(streams)) %>% 
+  distinct(artist_individual, .keep_all = TRUE) %>%
+  select(artist_individual, artist_id, artist_img, artist_total_streams, artist_genre) %>%
+  arrange(desc(artist_total_streams)) %>%
+  head(globaltop10artists, n=10)
+
+
+# Create Top 10 Artist plotly graph
+fig_globaltop10artists <- ggplot(globaltop10artists, 
+            aes(x = artist_total_streams, 
+                y = fct_reorder(artist_individual, artist_total_streams),
+                customdata = artist_id,
+                text = paste("</br>Total Streams:", artist_total_streams,
+                             "</br>Artist Link: <a href=", artist_id, 
+                             " target='_blank'>", artist_id, "</a>",
+                             "</br>Artist Genre:", artist_genre))) +
+  geom_col() +
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_text(size = 8)) + 
+  labs(x="Total Streams", title = "Top 10 Spotify Artists")
+
+fig_globaltop10artists <- ggplotly(fig_globaltop10artists, tooltip = "text") %>%
+  layout(hoverlabel = list(bgcolor = "white", 
+                           bordercolor = "black",
+                           align = "left",
+                           persistent = TRUE),
+         hovertemplate = "%{text}<extra></extra>") %>%
+  layout(title = list(text = "Top 10 Spotify Artists", x = 0.5, y = 0.95, xanchor = "center", yanchor = "top"))
+
+fig_globaltop10artists
+```
+
+```{r}
+#| out.width: "90%"
+#| label: fig-top10artistwc
+#| fig-cap: Genres of the Top 10 Spotify Artists
+# Create a new data frame with unique words in artist genre and their frequencies
+genre_frequency_df <- globaltop10artists %>%
+  separate_rows(artist_genre, sep = " ") %>%
+  group_by(word = tolower(artist_genre)) %>%
+  summarise(frequency = n())
+
+# Print the new data frame
+#print(word_frequency_df)
+
+# library
+library(wordcloud2) 
+ 
+# have a look to the example dataset
+# head(demoFreq)
+
+# Basic plot
+genre_wc <- wordcloud2(data=genre_frequency_df, size=1,
+                       fontFamily = "Verdana", fontWeight = "bold",
+           color=rep_len(c("lightgreen","grey"), nrow(genre_frequency_df)),
+           shape = "circle")
+genre_wc
+```
+
+## Top 10 Songs
+- An intriguing observation arises as we note that **the creators behind the top 10 songs differ from the artists in the top 10 list**
+- This variance may suggest a **distinction between short-term and long-term popularity**, given that the artists behind these songs seem to have achieved recognition primarily through a single hit
+```{r}
+#| out.width: "90%"
+#| label: fig-top10songs
+#| fig-cap: Top 10 Spotify Songs in January 2022
 
 # Manipulate data set to obtain top 10 tracks from the "Global" charts
 
@@ -50,15 +133,6 @@ globaltop10tracks <- spotify %>%
   select(uri, track_name, artist_names, album_cover, track_total_streams) %>%
   arrange(desc(track_total_streams)) %>%
   head(globaltop10tracks, n=10)
-
-globaltop10artists <- spotify %>% 
-  filter(country == "Global") %>% 
-  group_by(artist_individual) %>% 
-  mutate(artist_total_streams = sum(streams)) %>% 
-  distinct(artist_individual, .keep_all = TRUE) %>%
-  select(artist_individual, artist_id, artist_img, artist_total_streams) %>%
-  arrange(desc(artist_total_streams)) %>%
-  head(globaltop10artists, n=10)
 
 # Create Top 10 Tracks plotly graph
 fig_globaltop10tracks <- ggplot(globaltop10tracks, 
@@ -72,43 +146,21 @@ fig_globaltop10tracks <- ggplot(globaltop10tracks,
   geom_col() +
   theme(axis.title.y = element_blank(),
         axis.text.y = element_text(size = 8)) + 
-  labs(x="Total Streams")
+  labs(x="Total Streams", title = "Top 10 Spotify Songs")
 
 fig_globaltop10tracks <- ggplotly(fig_globaltop10tracks, tooltip = "text") %>%
   layout(hoverlabel = list(bgcolor = "white", 
                            bordercolor = "black",
                            align = "left",
                            persistent = TRUE),
-         hovertemplate = "%{text}<extra></extra>")
+         hovertemplate = "%{text}<extra></extra>") %>%
+  layout(title = list(text = "Top 10 Spotify Songs", x = 0.5, y = 0.95, xanchor = "center", yanchor = "top"))
 
-
-# Create Top 10 Artist plotly graph
-fig_globaltop10artists <- ggplot(globaltop10artists, 
-            aes(x = artist_total_streams, 
-                y = fct_reorder(artist_individual, artist_total_streams),
-                customdata = artist_id,
-                text = paste("</br>Total Streams:",artist_total_streams,
-                             "</br>Artist Link: <a href=", artist_id, 
-                             " target='_blank'>", artist_id, "</a>"))) +
-  geom_col() +
-  theme(axis.title.y = element_blank(),
-        axis.text.y = element_text(size = 8)) + 
-  labs(x="Total Streams")
-
-fig_globaltop10artists <- ggplotly(fig_globaltop10artists, tooltip = "text") %>%
-  layout(hoverlabel = list(bgcolor = "white", 
-                           bordercolor = "black",
-                           align = "left",
-                           persistent = TRUE),
-         hovertemplate = "%{text}<extra></extra>")
-
-subplot(fig_globaltop10tracks, fig_globaltop10artists, 
-        nrows = 2, widths = 1, margin =0.02,
-        shareX = TRUE) %>% 
-        layout(title = 'Top 10 Tracks and Artists in January 2022', position = "top center")
+fig_globaltop10tracks
 ```
 
-### Placeholder for Distribution of Attributes
+## Distribution of Song Attributes
+
 -   The histogram below shows the general distribution for each song attributes in January 2022
 
 -   This helps you understand generally what type of songs made it on to the Top 200 charts
@@ -117,13 +169,18 @@ subplot(fig_globaltop10tracks, fig_globaltop10artists,
 
 -   Will also include follow the Shiny example 6, for a "carousel" to list the other attributes (key, mode, loudness, tempo, duration). Current attributes in this histogram have values 0.0-1.0
 
-<iframe height="500" width="100%" frameborder="no" src="https://howeini.shinyapps.io/AttributeDist/"> </iframe>
+<iframe height="500" width="100%" frameborder="no" src="https://howeini.shinyapps.io/AttributeDist/">
+
+</iframe>
+:::
 
 ## Long-term Popularity
-- Long-term popularity is defined as the total streams of a song in the entire month of January, across all charts
-- Will be discovering what attributes make a song "timeless"
+
+-   Long-term popularity is defined as the total streams of a song in the entire month of January, across all charts
+-   Will be discovering what attributes make a song "timeless"
 
 ### Correlation Matrix
+
 ```{r}
 library(plotly)
 
@@ -153,13 +210,18 @@ heatmap
 ```
 
 ### Global vs. Local
-<iframe height="500" width="100%" frameborder="no" src="https://howeini.shinyapps.io/WorldMap/"> </iframe>
+
+<iframe height="500" width="100%" frameborder="no" src="https://howeini.shinyapps.io/WorldMap/">
+
+</iframe>
 
 ## Short-term Popularity
-- Short-term popularity is analysed by taking rank minus previous rank. Since 1 is the highest ranking, a negative integer would indicate that the song has risen up in the charts while a positive integer would indicate a fall in ranking. The value of the integer would indicate the extent of change i.e. larger integer implies greater change.
-- Will also be examining peak rank and weeks on chart
+
+-   Short-term popularity is analysed by taking rank minus previous rank. Since 1 is the highest ranking, a negative integer would indicate that the song has risen up in the charts while a positive integer would indicate a fall in ranking. The value of the integer would indicate the extent of change i.e. larger integer implies greater change.
+-   Will also be examining peak rank and weeks on chart
 
 ### Placeholder for Correlation Matrix
+
 ```{r}
 library(plotly)
 # NEED TO ADD NEW COLUMN CALCULATING RANK-PREVRANK
@@ -189,11 +251,13 @@ heatmap
 ```
 
 ## Other Factors (KIV)
-- Does release_date have any influence? Maybe can see 50 songs with the earliest release_date so that we can see if they have any similar attributes
-- Artist genre?
+
+-   Does release_date have any influence? Maybe can see 50 songs with the earliest release_date so that we can see if they have any similar attributes
+-   Artist genre?
 
 ## Conclusion
-- What are the most important song attributes influencing a song's popularity?
-- What is the ideal range for duration of a song?
-- What genre? 
-- Do these answers differ based on language and region?
+
+-   What are the most important song attributes influencing a song's popularity?
+-   What is the ideal range for duration of a song?
+-   What genre?
+-   Do these answers differ based on language and region?
