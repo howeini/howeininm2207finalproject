@@ -500,3 +500,31 @@ mb <- track_attribute2 %>%
 mb
 
 ```
+
+```{r}
+library(plotly)
+library(corrplot)
+
+global2 <- spotify %>% 
+  group_by(track_name) %>% 
+  mutate(track_total_streams = sum(streams)) %>% 
+  distinct(track_name, .keep_all = TRUE)
+
+# Compute the correlation matrix
+correlation_matrix2 <- cor(global2[, c("danceability", "energy", "key", "mode", "loudness", "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo", "duration", "track_total_streams")])
+
+# Create interactive heatmap using plot_ly
+heatmap <- plot_ly(
+  x = colnames(correlation_matrix2),
+  y = colnames(correlation_matrix2),
+  z = correlation_matrix2,
+  type = "heatmap",
+  colorscale = "Portland",
+  colorbar = list(title = "Correlation"),
+  text = correlation_matrix,
+  hoverinfo = "text"
+)
+
+# Show the interactive heatmap
+heatmap
+```
