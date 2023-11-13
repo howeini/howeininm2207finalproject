@@ -45,36 +45,37 @@ attribute_descriptions <- data.frame(
 
 # Define UI ----
 ui <- fluidPage(
-  h1("Song Attributes"),
+  h1("Select the attributes to be displayed"),
   
   fluidRow(
     
-    column(width = 3,
+    column(width = 2,
            hr(),
-           h3("Select the attributes to be displayed"),
            checkboxGroupInput("sel_attributes", 
                               label = h4("Song Attributes:"),
                               choices = c("danceability", "energy", "speechiness", "acousticness", 
                                           "instrumentalness", "liveness", "valence"),
                               selected = c("danceability")
                               )),
-    column(width = 4,
+    column(width = 5,
            hr(),
            h3("Explore the data at different levels of detail"),
-           p("A", span("smaller", style = "color:red; font-size:14px; text-decoration: underline"), "number of bins can provide an overview of the general shape of the distribution, 
-             while a larger number of bins can reveal smaller peaks, valleys, or outliers."),
+           p("A", span("smaller", style = "color:red; font-size:14px; text-decoration: underline"), 
+           "number of bins can provide an overview of the general shape of the distribution, 
+             while a", span("larger", style = "color:red; font-size:14px; text-decoration: underline"), 
+           "number of bins can reveal smaller peaks, valleys, or outliers."),
            sliderInput("bins", 
                        label = h4("Number of Bins:"),
                        min = 1, max = 50, value = 25)
            ),
            
-    column(width = 4,
+    column(width = 5,
            hr(),
            h3("Unsure on how to interpret a histogram?"),
            checkboxInput("show_interpretation",
                          label = ("Show how to interpret a histogram"),
                          value = FALSE),
-           textOutput("interpretation")
+           htmlOutput("interpretation")
            )
     ),
   
@@ -86,7 +87,7 @@ ui <- fluidPage(
     
     column(width = 5,
            h4("Here is a description of your selected attributes:"),
-           p("The attributes have values ranging from 0.0 to 1.0, with 0.0 indicating the minimum and 1.0 indicating the maximum value."),
+           p("Each attribute's value ranges from 0.0 to 1.0, with 0.0 indicating the minimum and 1.0 indicating the maximum value."),
            p("For example, for the danceability attribute, 0.0 means least danceable, and 1.0 means most danceable."),
            br(),
            tableOutput("description"))
@@ -111,7 +112,7 @@ server <- function(input, output) {
     ggplot(data = track_attribute1, 
            mapping = aes(x = value, fill=attribute)) + 
       geom_histogram(alpha=0.5, bins = input$bins) +
-      labs(y = "Frequency", title = "Frequency of Attribute")
+      labs(x = "Value", y = "Frequency", title = "Frequency of Attribute")
   }, height = 600)
   
   output$description <- renderTable({
@@ -135,17 +136,22 @@ server <- function(input, output) {
   output$interpretation <- renderText({
     req(input$show_interpretation)
     if (input$show_interpretation) {
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
-      Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, 
-      when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-      It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. 
-      It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, 
-      and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+      text <- "
+              <ul> <li> Each bar shows the <b> frequency </b> of data points falling within a specific range </li>
+              <li> This gives a quick glance at the dataset's <b> most common values </b> </li>
+              <li> <b> Bar Height: </b> Indicates popularity
+                    <ul> <li> Taller bars = higher frequency </li> </ul>
+                    </li> 
+              <li> <b> Histogram Width: </b> Reflects range of values
+                    <ul> <li> Wider histograms = broad dataset </li> </ul>
+                    </li>
+              <li> <b> Outliers </b> stand out as individual points detached from the main cluster of bars </li>"
+      HTML(text)
     } else {
       NULL
     }
   })
-
+  
 }
 
 # Run the app ----
