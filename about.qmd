@@ -203,9 +203,12 @@ To delve into the intricacies of song popularity, our analysis unfolds along the
 
 Long-term popularity is gauged by a song's total streams throughout January, encompassing all charts. Songs with enduring appeal possess what we might call "timeless" attributes --- characteristics we seek to unearth in our analysis.
 
-#### Correlation Matrix
+> *Explore the tabs below to unfold the correlation and feature importance analyses, which can help you analyse the relationship between total streams and song attributes.*
 
-::: {.callout-tip appearance="simple"}
+::: panel-tabset
+## Correlation Matrix
+
+::: {.callout-note appearance="simple"}
 The correlation coefficient has 2 important features:
 
 -   **Sign (positive/negative):** Positive correlation indicates that as attribute value increase, the total streams of the song tend to follow suit. Conversely, a negative correlation signals a decline in total streams as the attribute value rises.
@@ -244,7 +247,70 @@ heatmap <- plot_ly(
 heatmap
 ```
 
-Total streams appears to have the strongest positive correlation with valence and danceability, and the strongest negative correlation with mode and acousticness. This means songs that often carry a timeless vibe, fall into the Minor scale, radiate positive energy, are great for dancing, and maintain a balance with less acoustic sound.
+## Feature Importance
+
+::: {.callout-note appearance="simple"}
+A **Random Forest model**, a powerful machine learning algorithm, excels in **precise predictions** by employing multiple decision trees, each contributing to the final outcome. Here, **Feature Importance** signifies the evaluation of each input factor's significance in prediction-making.
+
+The accompanying bar chart depicts the calculated Feature Importance with **total streams as the target variable**. A high Feature Importance denotes that specific factors, like tempo or valence, wield considerable influence over the model's decision process.
+:::
+
+```{r, eval=TRUE}
+# Load required libraries
+library(randomForest)
+library(ggplot2)
+
+global <- spotify %>% 
+  filter(country == "Global") %>% 
+  group_by(track_name) %>% 
+  mutate(song_total_streams = sum(streams)) %>% 
+  distinct(track_name, .keep_all = TRUE) %>%
+  select(song_total_streams, track_name, danceability, energy, key, mode,
+         loudness, speechiness, acousticness, instrumentalness, liveness,
+         valence, tempo, duration)
+
+global <- subset(global, select = -c(track_name))
+
+# Assuming your_data is your dataset with appropriate columns and preprocessing done
+
+# Assuming 'total_streams' and 'chart_rankings' are your target variables
+target_variables <- c("song_total_streams")
+
+# Prepare predictors (independent variables)
+predictors <- setdiff(names(global), "song_total_streams")
+
+# Train a Random Forest model for each target variable and plot feature importance
+
+rf_model <- randomForest(as.formula(paste("song_total_streams", "~", 
+                                          paste(predictors, collapse = " + "))), data = global)
+  
+  # Print feature importance
+  #print(importance(rf_model))
+  
+  importance_df <- as.data.frame(importance(rf_model))
+  importance_df$Attribute <- rownames(importance_df) # Make a new column using the row names
+
+  #glimpse(importance_df)
+```
+
+```{r, eval=TRUE}
+tsfi <- ggplot(importance_df) + 
+  aes(x = IncNodePurity, y= Attribute,
+      text = paste("Feature Importance:", IncNodePurity)) + 
+  geom_col() +
+  labs(x = "Value of Feature Importance for Total Streams")
+
+tsfi <- ggplotly(tsfi, tooltip = "text")
+
+tsfi
+```
+:::
+
+#### Unveiling Insights
+
+**Tempo, valence, and danceability** are crucial, showing both high importance and positive correlations with total streams. Conversely, **mode, acousticness, and instrumentalness,** while demonstrating negative correlations in the matrix, are moderately important, suggesting a nuanced relationship.
+
+**Energetic, positive, and danceable songs** consistently elevate popularity, underscoring the necessity for a comprehensive understanding of these elements in shaping song streaming dynamics. Simultaneously, **songs in minor keys, less acoustic in nature, and enriched with instrumental content** may also contribute to popularity, as indicated by the model.
 
 ## Short-term Popularity
 
@@ -256,7 +322,16 @@ Short-term popularity is analyzing rank changes. A negative value indicates a ri
 Rank change is calculated by subtracting the previous rank from the current rank. It's important to note that a lower rank is better, with 1 being the highest!
 :::
 
-#### Correlation Matrix
+::: panel-tabset
+## Correlation Matrix
+
+::: {.callout-note appearance="simple"}
+The correlation coefficient has 2 important features:
+
+-   **Sign (positive/negative):** Positive correlation indicates that as attribute value increase, the total streams of the song tend to follow suit. Conversely, a negative correlation signals a decline in total streams as the attribute value rises.
+
+-   **Magnitude (value):** Values closer to 1 (or -1) represent stronger correlations.
+:::
 
 ```{r}
 #| out.width: "90%"
@@ -289,7 +364,135 @@ heatmap <- plot_ly(
 # Show the interactive heatmap
 heatmap
 ```
-Energy and loudness show the most significant negative correlation with rank change. Danceability has the most substantial negative correlation with peak rank. Acousticness exhibits the most notable positive correlation with weeks on the chart. In short-term popularity, lively and loud songs tend to drop in rank less, while danceable tunes aim for higher peak positions. Additionally, songs with acoustic qualities often stay longer on the charts.
+## Feature Importance
+
+```{r, eval=TRUE}
+# Load required libraries
+library(randomForest)
+library(ggplot2)
+
+global <- spotify %>% 
+  filter(country == "Global") %>% 
+  group_by(track_name) %>% 
+  mutate(track_total_streams = sum(streams),
+         change_rank = rank - previous_rank) %>% 
+  distinct(track_name, .keep_all = TRUE) %>%
+  select(change_rank, peak_rank, weeks_on_chart, track_name, danceability, energy, key, mode,
+         loudness, speechiness, acousticness, instrumentalness, liveness,
+         valence, tempo, duration)
+
+
+
+# Assuming your_data is your dataset with appropriate columns and preprocessing done
+
+# Assuming 'total_streams' and 'chart_rankings' are your target variables
+target_variables <- c("change_rank, peak_rank, weeks_on_chart")
+
+
+change <- subset(global, select = -c(track_name, peak_rank, weeks_on_chart))
+# Prepare predictors (independent variables)
+change_predictors <- setdiff(names(change), "change_rank")
+
+# Train a Random Forest model for each target variable and plot feature importance
+
+change_rf_model <- randomForest(as.formula(paste("change_rank", "~", 
+                                          paste(change_predictors, collapse = " + "))), data = change)
+  
+  # Print feature importance
+  #print(importance(rf_model))
+  
+  change_importance_df <- as.data.frame(importance(change_rf_model))
+  change_importance_df$Attribute <- rownames(change_importance_df) # Make a new column using the row names
+  
+  
+  
+  
+  
+  
+  peak <- subset(global, select = -c(track_name, change_rank, weeks_on_chart))
+  peak_predictors <- setdiff(names(peak), "peak_rank")
+
+# Train a Random Forest model for each target variable and plot feature importance
+
+  peak_rf_model <- randomForest(as.formula(paste("peak_rank", "~", 
+                                          paste(peak_predictors, collapse = " + "))), data = peak)
+  
+  # Print feature importance
+  #print(importance(rf_model))
+  
+  peak_importance_df <- as.data.frame(importance(peak_rf_model))
+  peak_importance_df$Attribute <- rownames(peak_importance_df) # Make a new column using the row names
+
+  
+  
+  
+  
+  week <- subset(global, select = -c(track_name, change_rank, peak_rank))
+  week_predictors <- setdiff(names(week), "weeks_on_chart")
+
+# Train a Random Forest model for each target variable and plot feature importance
+
+  week_rf_model <- randomForest(as.formula(paste("weeks_on_chart", "~", 
+                                          paste(week_predictors, collapse = " + "))), data = week)
+  
+  # Print feature importance
+  #print(importance(rf_model))
+  
+  week_importance_df <- as.data.frame(importance(week_rf_model))
+  week_importance_df$Attribute <- rownames(week_importance_df) # Make a new column using the row names
+```
+
+```{r, eval=TRUE}
+library(ggplot2)
+library(dplyr)
+library(plotly)
+
+# Assuming change_importance_df and peak_importance_df have a similar structure
+# Combine the two data frames
+combined_df <- bind_rows(
+  mutate(change_importance_df, Category = "change_rank"),
+  mutate(peak_importance_df, Category = "peak_rank"),
+  mutate(week_importance_df, Category = "weeks_on_chart")
+)
+
+# Create a clustered horizontal bar chart
+cfi <- ggplot(combined_df) +
+  aes(x = IncNodePurity, y = Attribute, fill = Category,
+      text = paste("Feature Importance:", IncNodePurity)) +
+  geom_col(position = "dodge") +
+  labs(x = "Value of Feature Importance for Total Streams")
+
+# Convert to plotly
+cfi <- ggplotly(cfi, tooltip = "text")
+
+# Show the plot
+cfi
+```
+:::
+
+#### Unveiling Insights
+Across rank changes, peak rank, and weeks on chart, three key attributes consistently stand out in shaping a song's popularity dynamics. **Danceability** emerges as a central factor, positively impacting rank changes and peak rank, and showing influence on weeks spent on charts. **Energy** follows closely, demonstrating positive correlations with rank changes and peak rank, and significant importance for extended chart presence. **Valence**, reflecting the positivity of a song, consistently influences rank changes positively and correlates with a higher peak rank. 
+
+A detailed analysis for each measure of short-term popularity can be found below.
+
+::: panel-tabset
+## Change in Rank
+Songs with **higher tempo and valence** exhibit a **more pronounced impact on changes in rank**, indicating that **faster-paced and more positive-sounding songs** are likely to experience significant shifts in their positions. 
+
+Features like **speechiness and acousticness**, despite having notable importance, display negative correlations with changes in rank. This implies that songs with **more spoken words and an acoustic nature** are associated with **more stable rankings**. 
+
+Loudness, although highly important, also exhibits a negative correlation, suggesting that **extreme volume levels may not contribute to significant changes** in a song's rank.
+
+## Peak Rank
+**Danceability, energy, and loudness** emerge as highly important attributes, suggesting that songs with **energetic and danceable qualities, coupled with louder volumes,** are more likely to achieve higher peak ranks. 
+
+Features like **instrumentalness and valence** exhibit positive correlations, indicating that songs with **more instrumental elements and positive emotional tones** tend to attain better peak rankings. 
+
+## Weeks on Chart
+**Danceability, energy, and acousticness** emerge as influential features, indicating that songs with **high danceability and energy, as well as a moderate level of acousticness,** are more likely to stay longer on the charts. 
+
+**Speechiness and tempo** exhibit negative correlations, suggesting that songs with **lower speech content and slower tempos** tend to have a longer duration on the charts. The feature importance aligns with these correlations, highlighting the significance of **danceability, energy, and acousticness** in determining a song's sustained presence on streaming charts.
+:::
 :::
 
 ## Comparing Global and Local Trends
@@ -298,8 +501,7 @@ Energy and loudness show the most significant negative correlation with rank cha
 
 </iframe>
 
--   Does release_date have any influence? Maybe can see 50 songs with the earliest release_date so that we can see if they have any similar attributes
--   Artist genre?
+-   It appears that Brazil consistently has the most streams so they are the largest target demographic.
 
 ## Conclusion
 

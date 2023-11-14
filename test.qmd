@@ -6,6 +6,7 @@ execute:
   warning: false
 engine: knitr
 ---
+
 ```{r, eval=TRUE}
 library(tidyverse)
 raw <- read_csv("Jan2022_Spotify_Weekly_Top_200_Songs_Streaming_Data_by_country_view_view.csv")
@@ -14,6 +15,7 @@ spotify <- subset(raw, select = -c(X_1, artists_num, artist_genre, collab, album
 ```
 
 # Correlation Map
+
 ```{r}
 library(corrplot)
 
@@ -63,6 +65,7 @@ heatmap
 ```
 
 # randomForest Prediction (WORKS)
+
 ```{r, eval=TRUE}
 # Load required libraries
 library(randomForest)
@@ -87,9 +90,8 @@ for (target_var in target_variables) {
 }
 ```
 
-
-
 # randomForest Prediction (test)
+
 ```{r, eval=TRUE}
 # Load required libraries
 library(randomForest)
@@ -129,6 +131,7 @@ ggplot(importance_df) +
 ```
 
 # Make clickable bar graph with girafe https://github.com/jfrench/DataWrangleViz/blob/master/06-interactive-graphics-ggiraph.Rmd#L215
+
 ```{r}
 # add variable that would perform a google search for each observation's cut
 diamonds <- diamonds |>
@@ -156,7 +159,9 @@ ibar_click <- ggplot(data = diamonds) +
                            onclick = bar_onclick))
 girafe(ggobj = ibar_click)
 ```
+
 ### Incorporated into mine, but cannot work in qmd
+
 ```{r}
 library(ggplot2)
 library(ggiraph)
@@ -202,7 +207,6 @@ fig_globaltop10tracks <- girafe(ggobj = fig_globaltop10tracks)
 print(fig_globaltop10tracks)
 ```
 
-
 ## Correlation matrix
 
 ```{r}
@@ -212,8 +216,8 @@ library(ggcorrplot)
 #head(corr)
 ```
 
+# Country map
 
-# Country map 
 ```{r}
 # Download the shapefile. (note that I store it in a folder called DATA. You have to change that if needed.)
 download.file("http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip" , destfile="DATA/world_shape_file.zip")
@@ -230,7 +234,6 @@ library(leaflet)
 m <- leaflet() %>% addTiles() # Then we Add default OpenStreetMap map tiles
 m
 ```
-
 
 ```{r}
 # Read this shape file with the rgdal library. 
@@ -251,6 +254,7 @@ world_spdf@data$POP2005 <- as.numeric(as.character(world_spdf@data$POP2005)) / 1
 ```
 
 ## https://www.datanovia.com/en/blog/how-to-create-a-map-using-ggplot2/
+
 ```{r, eval=TRUE}
 world_map <- map_data("world")
 ggplot(world_map, aes(x = long, y = lat, group = group)) +
@@ -258,13 +262,13 @@ ggplot(world_map, aes(x = long, y = lat, group = group)) +
 ```
 
 # To show as sliding carousel, but can't do the interatcive portion yet
+
 ```{r}
 # Reference: https://gist.github.com/riinuots/dbbd3d473abb3628a0986fba5e517738
 fig_globaltop10tracks = xmlSVG({show(fig_globaltop10tracks)}, standalone = TRUE, height = 4, width = 4)  
 fig_globaltop10artists = xmlSVG({show(fig_globaltop10artists)}, standalone = TRUE, height = 4, width = 4)  
 slickR(list(fig_globaltop10tracks, fig_globaltop10artists), height = 400) + settings(dots = TRUE, autoplay = TRUE)
 ```
-
 
 ```{r, warning=FALSE, message=FALSE}
 # danceability, energy, speechiness, acousticness, instrumentalness, liveness, valence
@@ -319,6 +323,7 @@ fig
 ```
 
 # Global data set, summarised by artists
+
 ```{r, echo=FALSE}
 globaltop10artists <- spotify %>% 
   filter(country == "Global") %>% 
@@ -340,6 +345,7 @@ subplot(fig_globaltop10artists,fig_globaltop10tracks)
 ```
 
 # Global top 10 songs based on week
+
 ```{r, eval=FALSE}
 spotify %>% filter(country == "Global", week == "2022-01-27") %>% distinct(track_name, .keep_all = TRUE) %>% arrange(rank)
 ```

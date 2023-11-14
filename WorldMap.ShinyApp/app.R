@@ -89,7 +89,8 @@ worldMaps <- function(df, world_data, attribute, week){
                        panel.background = element_blank(), 
                        legend.position = "right",
                        panel.border = element_blank(), 
-                       strip.background = element_rect(fill = 'white', colour = 'white'))
+                       strip.background = element_rect(fill = 'white', colour = 'white'),
+                       plot.background = element_rect(fill = "darkgrey"))
   }
   
   # Select only the data that the user has selected to view
@@ -108,12 +109,12 @@ worldMaps <- function(df, world_data, attribute, week){
   library(RColorBrewer)
   library(ggiraph)
   g <- ggplot() + 
-    geom_polygon_interactive(data = subset(world_data, lat >= -60 & lat <= 90), color = 'black', size = 0.1,
+    geom_polygon_interactive(data = subset(world_data, lat >= -60 & lat <= 90), color = 'grey', size = 0.1,
                              aes(x = long, y = lat, fill = value, group = group, 
                                  tooltip = paste("Country (Language):", region, "(",language,")",
                                               "</br>Top Song:", track_name,
                                               "</br>Artists:", artist_names,
-                                              "</br>Value of Selected Attribute:", value))) + 
+                                              "</br>Value of", attribute, ":", value))) + 
     scale_fill_gradientn(colours = brewer.pal(5, "Spectral"), na.value = 'white') + 
     labs(fill = attribute, color = attribute, title = NULL, x = NULL, y = NULL) + 
     my_theme()
@@ -137,9 +138,15 @@ ui <- fluidPage(
                         choices = unique(top_tracks$attribute),
                         selected = "streams"),
             
-            selectInput("week",
-                        label = "Select the week to be displayed",
-                        choices = unique(top_tracks$week))
+            sliderInput("week",
+                        label = "Drag to select the week to be displayed",
+                        min = min(unique(top_tracks$week)),
+                        max = max(unique(top_tracks$week)),
+                        value = min(unique(top_tracks$week)),
+                        step = 7,
+                        ticks = FALSE,
+                        animate = animationOptions(interval = 2000, loop = TRUE)),
+            h6("Alternatively, click the Play button to loop the animation!")
         ),
 
         # Show a plot of the generated distribution
@@ -152,7 +159,7 @@ ui <- fluidPage(
           # Output: interactive world map
           h6("Tip: Select the magnifying glass (middle option), and double click to zoom in! 
              When you're done examining, select the last option to reset your view."),
-          girafeOutput("distPlot")
+          girafeOutput("distPlot", width = "600px", height = "400px")
         )
     )
 )
