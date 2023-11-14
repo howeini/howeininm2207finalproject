@@ -64,3 +64,6 @@ On [Github](https://github.com/howeini/NM2207), you can find all my Code-Along d
 ## Week 12
 - Completed the structure for Shiny App #1: [Attribute Distribution](https://howeini.shinyapps.io/AttributeDist/)
 - Completed the structure for Shiny App #2: [World Map Visualisation](https://howeini.shinyapps.io/WorldMap/)
+
+## Week 13
+- Completed Final Project

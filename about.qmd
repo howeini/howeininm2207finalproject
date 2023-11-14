@@ -502,21 +502,26 @@ Features like **instrumentalness and valence** exhibit positive correlations, in
 
 ### Summary
 
-In both the long and short term, three main factors consistently influence a song's popularity: **danceability, energy, and valence**. Generally, songs that are energetic, positive, and danceable tend to perform well.
+In both the long and short term, 3 main attributes consistently influence a song's popularity: **danceability, energy, and valence**. Generally, songs that are energetic, positive, and danceable tend to perform well.
 
 However, when it comes to enduring popularity over the long term, additional factors like **mode, acousticness, and instrumentalness** become significant. Specifically, songs in minor keys or featuring more instrumental elements are considered "timeless," suggesting a lasting appeal that goes beyond current trends.
 
 ## Comparing Global and Local Trends
 
+Studying local trends is essential in helping us understand what people love in different places, making the music experience more personal and relatable for everyone.
+
+The following analysis focuses on the 3 identified attributes that impact how popular songs become: **danceability, energy, and valence**. In **Asia**, people have a lower preference for songs that are easy to dance to. The **energy** level varies a lot across different places, indicating no clear local trends. In terms of **valence**, **Canada** consistently leans towards super positive tunes.
+
 <iframe height="500" width="100%" frameborder="no" src="https://howeini.shinyapps.io/WorldMap/">
 
 </iframe>
 
--   It appears that Brazil consistently has the most streams so they are the largest target demographic.
+## Decoding Musical Success: Final Insights
 
-## Conclusion
+### **What factors shape the popularity of songs in today's diverse music landscape?**
 
--   What are the most important song attributes influencing a song's popularity?
--   What is the ideal range for duration of a song?
--   What genre?
--   Do these answers differ based on language and region?
+Ultimately, a song's success involves an intricate interplay between global proclivities and localised nuances. The consistent sway of danceability, energy, and valence over a song's trajectory, be it in the short or long term, is undeniably significant. This holds profound implications for artists and marketers seeking resonance with diverse audiences. Moreover, the identification of songs in minor keys or enriched with instrumental elements as possessing a timeless quality speaks to the transcendence of these compositions beyond transient trends, reflecting the collective sentiment of society.
+
+The comparative analysis of global and local trends offers intriguing insights. Notably, the lower preference for highly danceable songs in Asia and Canada's strong affinity for positive songs sparks questions about the influence of culture and values on musical tastes and preferences.
+
+While the intricacies of song popularity are undoubtedly multifaceted, this analysis aspires to offer a thought-provoking perspective on the dynamic interplay of musical elements that resonate with audiences worldwide.
