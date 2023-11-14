@@ -89,8 +89,7 @@ worldMaps <- function(df, world_data, attribute, week){
                        panel.background = element_blank(), 
                        legend.position = "right",
                        panel.border = element_blank(), 
-                       strip.background = element_rect(fill = 'white', colour = 'white'),
-                       plot.background = element_rect(fill = "darkgrey"))
+                       strip.background = element_rect(fill = 'white', colour = 'white'))
   }
   
   # Select only the data that the user has selected to view
@@ -109,7 +108,7 @@ worldMaps <- function(df, world_data, attribute, week){
   library(RColorBrewer)
   library(ggiraph)
   g <- ggplot() + 
-    geom_polygon_interactive(data = subset(world_data, lat >= -60 & lat <= 90), color = 'grey', size = 0.1,
+    geom_polygon_interactive(data = subset(world_data, lat >= -60 & lat <= 90), color = 'darkgrey', size = 0.1,
                              aes(x = long, y = lat, fill = value, group = group, 
                                  tooltip = paste("Country (Language):", region, "(",language,")",
                                               "</br>Top Song:", track_name,
@@ -123,6 +122,69 @@ worldMaps <- function(df, world_data, attribute, week){
 }
 
 
+# Attribute descriptions data frame
+attribute_descriptions <- data.frame(
+  attribute = c("danceability", "energy", "speechiness", "acousticness", 
+                "instrumentalness", "liveness", "valence", 
+                "key", "mode", "loudness", "tempo", "duration", "streams"),
+  description = c(
+    "How suitable a track is for dancing based on a combination of musical elements 
+    including tempo, rhythm stability, beat strength, and overall regularity.",
+    
+    "Represents a perceptual measure of intensity and activity. 
+    Typically, energetic tracks feel fast, loud, and noisy. 
+    For example, death metal has high energy, while a Bach prelude scores low on the scale. 
+    Perceptual features contributing to this attribute include dynamic range, perceived loudness, 
+    timbre, onset rate, and general entropy.",
+    
+    "Speechiness detects the presence of spoken words in a track. 
+    The more exclusively speech-like the recording (e.g. talk show, audio book, poetry), 
+    the closer to 1.0 the attribute value. 
+    Values above 0.66 describe tracks that are probably made entirely of spoken words. 
+    Values between 0.33 and 0.66 describe tracks that may contain both music and speech,
+    either in sections or layered, including such cases as rap music. 
+    Values below 0.33 most likely represent music and other non-speech-like tracks.",
+    
+    "A confidence measure of whether the track is acoustic. 
+    1.0 represents high confidence the track is acoustic.",
+    
+    "Predicts whether a track contains no vocals. 
+    'Ooh' and 'aah' sounds are treated as instrumental in this context. 
+    Rap or spoken word tracks are clearly 'vocal'. 
+    The closer the instrumentalness value is to 1.0, the greater likelihood the track contains no vocal content. 
+    Values above 0.5 are intended to represent instrumental tracks, but confidence is higher as the value approaches 1.0.",
+    
+    "Detects the presence of an audience in the recording. 
+    Higher liveness values represent an increased probability that the track was performed live. 
+    A value above 0.8 provides strong likelihood that the track is live.",
+    
+    "Describes the musical positiveness conveyed by a track. 
+    Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), 
+    while tracks with low valence sound more negative (e.g. sad, depressed, angry)",
+    
+    "The key the track is in. Integers map to pitches using standard Pitch Class notation. 
+    E.g. 0 = C, 1 = C♯/D♭, 2 = D, 3 = D♯/E♭, 4 = E, 5 = F, 6 = F♯/G♭, 7 = G, 8 = G♯/A♭, 9 = A, 10 = A♯/B♭, 11 = B.
+    If no key was detected, the value is -1.",
+    
+    "Mode indicates the modality (major or minor) of a track, 
+    the type of scale from which its melodic content is derived. 
+    Major is represented by 1 and minor is 0.",
+    
+    "The overall loudness of a track in decibels (dB). 
+    Loudness values are averaged across the entire track.
+    Values typically range between -60 and 0 db.
+    The more negative the value, the louder the song is.",
+    
+    "The overall estimated tempo of a track in beats per minute (BPM). 
+    In musical terminology, tempo is the speed or pace of a given piece.
+    It is derived directly from the average beat duration.",
+    
+    "The duration of the track in milliseconds.",
+    
+    "Total streams for the top song of a country on that day."
+  )
+)
+
 
 # Define UI 
 ui <- fluidPage(
@@ -133,10 +195,6 @@ ui <- fluidPage(
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
         sidebarPanel(
-            selectInput("attribute",
-                        label = "Select the attribute to be displayed",
-                        choices = unique(top_tracks$attribute),
-                        selected = "streams"),
             
             sliderInput("week",
                         label = "Drag to select the week to be displayed",
@@ -145,8 +203,15 @@ ui <- fluidPage(
                         value = min(unique(top_tracks$week)),
                         step = 7,
                         ticks = FALSE,
-                        animate = animationOptions(interval = 2000, loop = TRUE)),
-            h6("Alternatively, click the Play button to loop the animation!")
+                        animate = animationOptions(interval = 8000, loop = TRUE)),
+            h6("Alternatively, click the Play button to loop the animation!"),
+            hr(),
+            selectInput("attribute",
+                        label = "Select the attribute to be displayed",
+                        choices = unique(top_tracks$attribute),
+                        selected = "streams"),
+            
+            tableOutput("description")
         ),
 
         # Show a plot of the generated distribution
@@ -175,6 +240,24 @@ server <- function(input, output) {
     x <- girafe_options(x, opts_zoom(min = 1, max = 20, duration = 1000),
                         opts_tooltip(css = "padding:10px;background-color:#333333;color:white;", opacity = 1))
   })
+  
+  output$description <- renderTable({
+    selected_attributes <- input$attribute
+    descriptions <- attribute_descriptions[attribute_descriptions$attribute %in% selected_attributes, ]
+    descriptions
+  },
+  striped = FALSE,  # Add striped rows
+  hover = TRUE,    # Highlight rows on hover
+  bordered = TRUE,  # Add borders to the table
+  spacing = "m",   # Set spacing between cells (options: "s", "xs", "m", "l")
+  width = "100%",  # Set table width
+  align = "c",     # Align cell content (options: "l" - left, "c" - center, "r" - right)
+  rownames = FALSE, # Show/hide row names
+  colnames = TRUE,  # Show/hide column names
+  digits = 2,       # Number of decimal places for numeric columns
+  na = "",          # String to display for missing values
+  quoted = FALSE    # Quote character for column names if TRUE
+  )
 }
 
 # Run the application 
