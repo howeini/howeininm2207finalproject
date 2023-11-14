@@ -294,6 +294,9 @@ rf_model <- randomForest(as.formula(paste("song_total_streams", "~",
 ```
 
 ```{r, eval=TRUE}
+#| out.width: "90%"
+#| label: fig-implt
+#| fig-cap: Feature Importance for Total Streams
 tsfi <- ggplot(importance_df) + 
   aes(x = IncNodePurity, y= Attribute,
       text = paste("Feature Importance:", IncNodePurity)) + 
@@ -444,6 +447,9 @@ change_rf_model <- randomForest(as.formula(paste("change_rank", "~",
 ```
 
 ```{r, eval=TRUE}
+#| out.width: "90%"
+#| label: fig-impst
+#| fig-cap: Feature Importance for Change in Rank, Peak Rank and Weeks on Chart
 library(ggplot2)
 library(dplyr)
 library(plotly)
