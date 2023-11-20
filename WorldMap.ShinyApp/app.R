@@ -33,14 +33,27 @@ raw <- read_csv("Jan2022_Spotify_Weekly_Top_200_Songs_Streaming_Data_by_country_
 spotify <- subset(raw, select = -c(X_1, artists_num, artist_genre, collab, album_num_tracks, pivot))
 
 # Obtain ISO3 Codes
-library(magrittr)
-library(rvest)
-library(countrycode)
-iso_codes = countrycode::codelist[, c("un.name.en", "iso3c")]
-names(iso_codes) = c("Country", "ISO3")
+# Create a data frame
+iso_codes <- data.frame(
+  country = c("Argentina", "Australia", "Austria", "Belgium", "Bolivia", "Brazil", "Bulgaria", "Canada", "Chile",
+              "Colombia", "Costa Rica", "Cyprus", "Czech Republic", "Denmark", "Dominican Republic", "Ecuador", "Egypt",
+              "El Salvador", "Estonia", "Finland", "France", "Germany", "Greece", "Guatemala", "Honduras",
+              "Hong Kong", "Hungary", "Iceland", "India", "Indonesia", "Ireland", "Israel", "Italy", "Japan", "Korea",
+              "Latvia", "Lithuania", "Luxembourg", "Malaysia", "Mexico", "Morocco", "Netherlands", "New Zealand",
+              "Nicaragua", "Norway", "Panama", "Paraguay", "Peru", "Poland", "Portugal", "Romania", "Saudi Arabia",
+              "Singapore", "Slovakia", "South Africa", "Spain", "Sweden", "Switzerland", "Taiwan", "Thailand", "Turkey",
+              "United Arab Emirates", "United Kingdom", "Ukraine", "Uruguay", "United States", "Vietnam", "Philippines", 
+              "South Korea", "UK", "USA"), # Names that are in World_data but not spotify
+  ISO3 = c("ARG", "AUS", "AUT", "BEL", "BOL", "BRA", "BGR", "CAN", "CHL", "COL", "CRI", "CYP", "CZE", "DNK", "DOM",
+           "ECU", "EGY", "SLV", "EST", "FIN", "FRA", "DEU", "GRC", "GTM", "HND", "HKG", "HUN", "ISL", "IND",
+           "IDN", "IRL", "ISR", "ITA", "JPN", "KOR", "LVA", "LTU", "LUX", "MYS", "MEX", "MAR", "NLD", "NZL", "NIC", "NOR",
+           "PAN", "PRY", "PER", "POL", "PRT", "ROU", "SAU", "SGP", "SVK", "ZAF", "ESP", "SWE", "CHE", "TWN", "THA", "TUR",
+           "ARE", "GBR", "UKR", "URY", "USA", "VNM", "PHL",
+           "KOR", "GBR", "USA")
+)
 
 # Add ISO3 Column to spotify df
-spotify['ISO3'] <- iso_codes$ISO3[match(spotify$country, iso_codes$Country)]
+spotify['ISO3'] <- iso_codes$ISO3[match(spotify$country, iso_codes$country)]
 
 # top_tracks shows the track ranked #1 in every country for each of the 4 weeks in Jan
 top_tracks <- spotify %>%
@@ -62,7 +75,10 @@ world_data <- fortify(world_data)
 head(world_data)
 
 # Add ISO3 Column to world_data df
-world_data["ISO3"] <- iso_codes$ISO3[match(world_data$region, iso_codes$Country)]
+world_data["ISO3_reg"] <- iso_codes$ISO3[match(world_data$region, iso_codes$country)]
+world_data["ISO3_subreg"] <- iso_codes$ISO3[match(world_data$subregion, iso_codes$country)]
+world_data$ISO3 <- ifelse(!is.na(world_data$ISO3_subreg), world_data$ISO3_subreg, world_data$ISO3_reg)
+
 
 # Next, it's time to define the function that we'll use for building our world maps. The inputs to this 
 # function are the merged data frame, the world data containing geographical coordinates, and the data type, 
@@ -93,7 +109,7 @@ worldMaps <- function(df, world_data, attribute, week){
   }
   
   # Select only the data that the user has selected to view
-  plotdf <- df[df$attribute == attribute & df$week == week,]
+  plotdf <- df[df$attribute == attribute & df$week == week,] 
   plotdf <- plotdf[!is.na(plotdf$ISO3), ]
   
   # Add the data the user wants to see to the geographical world data
@@ -114,7 +130,7 @@ worldMaps <- function(df, world_data, attribute, week){
                                               "</br>Top Song:", track_name,
                                               "</br>Artists:", artist_names,
                                               "</br>Value of", attribute, ":", value))) + 
-    scale_fill_gradientn(colours = brewer.pal(5, "Spectral"), na.value = 'white') + 
+    scale_fill_gradientn(colours = rev(brewer.pal(5, "Spectral")), na.value = 'white') + 
     labs(fill = attribute, color = attribute, title = NULL, x = NULL, y = NULL) + 
     my_theme()
   
@@ -192,30 +208,21 @@ ui <- fluidPage(
     # Application title
     titlePanel("World Map"),
 
-    # Sidebar with a slider input for number of bins 
-    sidebarLayout(
-        sidebarPanel(
-            
-            sliderInput("week",
-                        label = "Drag to select the week to be displayed",
-                        min = min(unique(top_tracks$week)),
-                        max = max(unique(top_tracks$week)),
-                        value = min(unique(top_tracks$week)),
-                        step = 7,
-                        ticks = FALSE,
-                        animate = animationOptions(interval = 8000, loop = TRUE)),
-            h6("Alternatively, click the Play button to loop the animation!"),
-            hr(),
+    bootstrapPage(
             selectInput("attribute",
                         label = "Select the attribute to be displayed",
                         choices = unique(top_tracks$attribute),
                         selected = "streams"),
-            
-            tableOutput("description")
-        ),
+            sliderInput("week",
+                        label = "Drag to select the week to be displayed. Alternatively, click the Play button to loop the animation!",
+                        min = min(unique(top_tracks$week)),
+                        max = max(unique(top_tracks$week)),
+                        value = min(unique(top_tracks$week)),
+                        step = 7,
+                        ticks = TRUE,
+                        animate = animationOptions(interval = 8000, loop = TRUE),
+                        width = '100%'),
 
-        # Show a plot of the generated distribution
-        mainPanel(
           # Hide errors
           tags$style(type = "text/css",
                      ".shiny-output-error { visibility: hidden; }",
@@ -224,10 +231,10 @@ ui <- fluidPage(
           # Output: interactive world map
           h6("Tip: Select the magnifying glass (middle option), and double click to zoom in! 
              When you're done examining, select the last option to reset your view."),
-          girafeOutput("distPlot", width = "600px", height = "400px")
+          girafeOutput("distPlot", width = "100%")
         )
     )
-)
+
 
 
 
@@ -241,24 +248,9 @@ server <- function(input, output) {
                         opts_tooltip(css = "padding:10px;background-color:#333333;color:white;", opacity = 1))
   })
   
-  output$description <- renderTable({
-    selected_attributes <- input$attribute
-    descriptions <- attribute_descriptions[attribute_descriptions$attribute %in% selected_attributes, ]
-    descriptions
-  },
-  striped = FALSE,  # Add striped rows
-  hover = TRUE,    # Highlight rows on hover
-  bordered = TRUE,  # Add borders to the table
-  spacing = "m",   # Set spacing between cells (options: "s", "xs", "m", "l")
-  width = "100%",  # Set table width
-  align = "c",     # Align cell content (options: "l" - left, "c" - center, "r" - right)
-  rownames = FALSE, # Show/hide row names
-  colnames = TRUE,  # Show/hide column names
-  digits = 2,       # Number of decimal places for numeric columns
-  na = "",          # String to display for missing values
-  quoted = FALSE    # Quote character for column names if TRUE
-  )
+
 }
 
 # Run the application 
 shinyApp(ui = ui, server = server)
+
