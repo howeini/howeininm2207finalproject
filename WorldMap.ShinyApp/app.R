@@ -64,7 +64,10 @@ top_tracks <- spotify %>%
   arrange(week, country) %>%
   pivot_longer(cols = streams:duration,
                names_to = "attribute",
-               values_to = "value")
+               values_to = "value") %>%
+  distinct()
+
+
 
   
 # Load World Data
@@ -138,72 +141,24 @@ worldMaps <- function(df, world_data, attribute, week){
 }
 
 
-# Attribute descriptions data frame
-attribute_descriptions <- data.frame(
-  attribute = c("danceability", "energy", "speechiness", "acousticness", 
-                "instrumentalness", "liveness", "valence", 
-                "key", "mode", "loudness", "tempo", "duration", "streams"),
-  description = c(
-    "How suitable a track is for dancing based on a combination of musical elements 
-    including tempo, rhythm stability, beat strength, and overall regularity.",
-    
-    "Represents a perceptual measure of intensity and activity. 
-    Typically, energetic tracks feel fast, loud, and noisy. 
-    For example, death metal has high energy, while a Bach prelude scores low on the scale. 
-    Perceptual features contributing to this attribute include dynamic range, perceived loudness, 
-    timbre, onset rate, and general entropy.",
-    
-    "Speechiness detects the presence of spoken words in a track. 
-    The more exclusively speech-like the recording (e.g. talk show, audio book, poetry), 
-    the closer to 1.0 the attribute value. 
-    Values above 0.66 describe tracks that are probably made entirely of spoken words. 
-    Values between 0.33 and 0.66 describe tracks that may contain both music and speech,
-    either in sections or layered, including such cases as rap music. 
-    Values below 0.33 most likely represent music and other non-speech-like tracks.",
-    
-    "A confidence measure of whether the track is acoustic. 
-    1.0 represents high confidence the track is acoustic.",
-    
-    "Predicts whether a track contains no vocals. 
-    'Ooh' and 'aah' sounds are treated as instrumental in this context. 
-    Rap or spoken word tracks are clearly 'vocal'. 
-    The closer the instrumentalness value is to 1.0, the greater likelihood the track contains no vocal content. 
-    Values above 0.5 are intended to represent instrumental tracks, but confidence is higher as the value approaches 1.0.",
-    
-    "Detects the presence of an audience in the recording. 
-    Higher liveness values represent an increased probability that the track was performed live. 
-    A value above 0.8 provides strong likelihood that the track is live.",
-    
-    "Describes the musical positiveness conveyed by a track. 
-    Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), 
-    while tracks with low valence sound more negative (e.g. sad, depressed, angry)",
-    
-    "The key the track is in. Integers map to pitches using standard Pitch Class notation. 
-    E.g. 0 = C, 1 = C♯/D♭, 2 = D, 3 = D♯/E♭, 4 = E, 5 = F, 6 = F♯/G♭, 7 = G, 8 = G♯/A♭, 9 = A, 10 = A♯/B♭, 11 = B.
-    If no key was detected, the value is -1.",
-    
-    "Mode indicates the modality (major or minor) of a track, 
-    the type of scale from which its melodic content is derived. 
-    Major is represented by 1 and minor is 0.",
-    
-    "The overall loudness of a track in decibels (dB). 
-    Loudness values are averaged across the entire track.
-    Values typically range between -60 and 0 db.
-    The more negative the value, the louder the song is.",
-    
-    "The overall estimated tempo of a track in beats per minute (BPM). 
-    In musical terminology, tempo is the speed or pace of a given piece.
-    It is derived directly from the average beat duration.",
-    
-    "The duration of the track in milliseconds.",
-    
-    "Total streams for the top song of a country on that day."
-  )
-)
+global_top_tracks <- top_tracks %>% filter(country == "Global")
 
 
 # Define UI 
 ui <- fluidPage(
+  
+  tags$head(
+    tags$style(
+      HTML(
+        "
+        #global_text {
+          padding: 6px 12px;
+          white-space: pre-wrap;
+        }
+        "
+      )
+    )
+  ),
 
     # Application title
     titlePanel("World Map"),
@@ -222,6 +177,9 @@ ui <- fluidPage(
                         ticks = TRUE,
                         animate = animationOptions(interval = 8000, loop = TRUE),
                         width = '100%'),
+            hr(),
+            verbatimTextOutput("global_text"),
+            br(),
 
           # Hide errors
           tags$style(type = "text/css",
@@ -248,6 +206,28 @@ server <- function(input, output) {
                         opts_tooltip(css = "padding:10px;background-color:#333333;color:white;", opacity = 1))
   })
   
+  
+  output$global_text <- renderText({
+    sel_attribute <- input$attribute
+    sel_week <- input$week
+    song_name <-  global_top_tracks %>%
+      filter(attribute %in% as.vector(input$attribute)) %>%
+      filter(week %in% as.vector(input$week)) %>%
+      pull(track_name)
+    
+    attribute_value <- global_top_tracks %>%
+      filter(attribute %in% as.vector(input$attribute)) %>%
+      filter(week %in% as.vector(input$week)) %>%
+      pull(value)
+    
+    artists <- global_top_tracks %>%
+      filter(attribute %in% as.vector(input$attribute)) %>%
+      filter(week %in% as.vector(input$week)) %>%
+      pull(artist_names)
+    
+    output_text <- paste0("Based on the global charts, the top song in ", sel_week, " is ", song_name, " by ", artists,
+                          ". For this song, the value of your selected attribute, ", sel_attribute, ", is ", attribute_value, ".")
+  })
 
 }
 
