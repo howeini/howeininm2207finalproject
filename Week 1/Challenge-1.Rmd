@@ -1,0 +1,26 @@
+---
+title: "Challenge-1"
+author: "Ho Wei Ni"
+date: "`r Sys.Date()`"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Self Introduction
+
+My name is Wei Ni and I'm a Year 2 student studying Business and Communications and New Media. I have no experience with coding, but I hope Google can help me with this course. 
+
+```{r, out.height= "300px",out.width="250px",echo=FALSE,eval=TRUE,fig.cap="Hearts with an Aunty at a Communication and Engagement activity"}
+knitr::include_graphics("/Users/howeini/Desktop/NM2207/Week 1/IMG_4536.jpeg") 
+```
+
+### R Studio Layout for Challenge 1
+
+```{r, out.height= "300px",out.width= "500px",echo=FALSE,eval=TRUE,fig.cap="R Studio Layout"}
+knitr::include_graphics("/Users/howeini/Downloads/Screenshot 2023-08-14 at 7.03.56 PM.png") 
+```

@@ -1,0 +1,578 @@
+---
+filters:
+  - shinylive
+execute: 
+  eval: true
+  echo: false
+  warning: false
+tbl-cap-location: bottom
+---
+
+## Harmony Across Culture: The Essence of Music
+
+Music, a universal language, intricately weaves itself into the very fabric of diverse societies, becoming a profound expression of culture. Across communities worldwide, music stands as a unifying force, transcending differences and fostering a shared connection among people.
+
+### **Unlocking Music in Business and Communication**
+
+Beyond its cultural significance, music holds *hidden potential*, particularly in the realms of business and communication. Unraveling the factors shaping song popularity offers artists and marketers invaluable insights into audience preferences. This understanding enables the creation of content that resonates deeply with diverse communities. From a communication perspective, popular songs act as poignant reflections of collective sentiments, encapsulating societal moods, highlighting emerging trends, and embodying cultural shifts.
+
+### **From Data to Narratives**
+
+The question we're answering today is: [**what factors shape the popularity of songs in today's diverse music landscape?**]{.underline} Before we dive into the nitty-gritty details, let's kick things off with a panoramic overview of the music landscape as of January 2022.
+
+::: {.callout-note appearance="simple"}
+*This analysis draws from Spotify's 'Weekly Top Songs' charts, encompassing both individual countries and the global scene throughout January 2022. The raw data set can be found on [Kaggle](https://www.kaggle.com/datasets/yelexa/spotify200).*
+:::
+
+```{r, echo=FALSE, message=FALSE}
+# Load library
+library(tidyverse)
+library(ggplot2)
+library(ggiraph) # To make ggplot2 interactive
+library(plotly)
+library(forcats)
+library(scales)
+library(svglite) # For ggplot Carousel
+library(slickR) # For ggplot Carousel 
+
+# Read CSV file
+raw <- read_csv("Jan2022_Spotify_Weekly_Top_200_Songs_Streaming_Data_by_country_view_view.csv")
+
+# Remove unnecessary columns
+spotify <- subset(raw, select = -c(X_1, artists_num, collab, album_num_tracks, pivot))
+```
+
+## A Snapshot of the Music Industry
+
+First up, let's dive into the standout stars of January 2022---both in terms of artists and songs.
+
+::: panel-tabset
+## Top 10 Artists
+
+-   **The Weeknd** claims the top spot, commanding a remarkable total of over 700 million streams
+-   **Pop** is the predominant genre among these elite top 10 Spotify artists.
+
+```{r}
+#| out.width: "90%"
+#| label: fig-top10artist
+#| fig-subcap: 
+#| - Top 10 Spotify Artists in January 2022
+#| - Genres of the Top 10 Spotify Artists
+#| layout-ncol: 2
+
+# Manipulate data set to obtain top 10 tracks from the "Global" charts
+
+globaltop10artists <- spotify %>% 
+  filter(country == "Global") %>% 
+  group_by(artist_individual) %>% 
+  mutate(artist_total_streams = sum(streams)) %>% 
+  distinct(artist_individual, .keep_all = TRUE) %>%
+  select(artist_individual, artist_id, artist_img, artist_total_streams, artist_genre) %>%
+  arrange(desc(artist_total_streams)) %>%
+  head(globaltop10artists, n=10)
+
+
+# Create Top 10 Artist plotly graph
+fig_globaltop10artists <- ggplot(globaltop10artists, 
+            aes(x = artist_total_streams, 
+                y = fct_reorder(artist_individual, artist_total_streams),
+                customdata = artist_id,
+                text = paste("</br>Total Streams:", artist_total_streams,
+                             "</br>Artist Link: <a href=", artist_id, 
+                             " target='_blank'>", artist_id, "</a>",
+                             "</br>Artist Genre:", artist_genre))) +
+  geom_col() +
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_text(size = 8)) + 
+  labs(x="Total Streams", title = "Top 10 Spotify Artists")
+
+fig_globaltop10artists <- ggplotly(fig_globaltop10artists, tooltip = "text") %>%
+  layout(hoverlabel = list(bgcolor = "white", 
+                           bordercolor = "black",
+                           align = "left",
+                           persistent = TRUE),
+         hovertemplate = "%{text}<extra></extra>") %>%
+  layout(title = list(text = "Top 10 Spotify Artists", x = 0.5, y = 0.95, xanchor = "center", yanchor = "top"))
+
+fig_globaltop10artists
+
+# Create a new data frame with unique words in artist genre and their frequencies
+genre_frequency_df <- globaltop10artists %>%
+  separate_rows(artist_genre, sep = " ") %>%
+  group_by(word = tolower(artist_genre)) %>%
+  summarise(frequency = n()) %>%
+  arrange(desc(frequency))
+
+# Print the new data frame
+#print(word_frequency_df)
+
+# library
+library(wordcloud2) 
+ 
+# have a look to the example dataset
+# head(demoFreq)
+
+# Basic plot
+genre_wc <- wordcloud2(data=genre_frequency_df, size=1,
+                       fontFamily = "Verdana", fontWeight = "bold",
+           color=rep_len(c("lightgreen","grey"), nrow(genre_frequency_df)),
+           shape = "circle")
+genre_wc
+```
+
+## Top 10 Songs
+
+-   **"We Don't Talk About Bruno"** tops the chart with over 500 million streams
+
+```{r}
+#| out.width: "90%"
+#| label: fig-top10songs
+#| fig-cap: Top 10 Spotify Songs in January 2022
+
+# Manipulate data set to obtain top 10 tracks from the "Global" charts
+
+globaltop10tracks <- spotify %>% 
+  filter(country == "Global") %>% 
+  group_by(track_name) %>% 
+  mutate(track_total_streams = sum(streams)) %>% 
+  distinct(track_name, .keep_all = TRUE) %>% 
+  select(uri, track_name, artist_names, album_cover, track_total_streams) %>%
+  arrange(desc(track_total_streams)) %>%
+  head(globaltop10tracks, n=10)
+
+# Create Top 10 Tracks plotly graph
+fig_globaltop10tracks <- ggplot(globaltop10tracks, 
+            aes(x = track_total_streams, 
+                y = fct_reorder(track_name, track_total_streams),
+                customdata = uri,
+                text = paste("</br>Total Streams:", track_total_streams,
+                             "</br>Artists:", str_wrap(artist_names, width = 50),
+                              "</br>Track Link: <a href=", uri, 
+                             " target='_blank'>", uri, "</a>"))) +
+  geom_col() +
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_text(size = 8)) + 
+  labs(x="Total Streams", title = "Top 10 Spotify Songs")
+
+fig_globaltop10tracks <- ggplotly(fig_globaltop10tracks, tooltip = "text") %>%
+  layout(hoverlabel = list(bgcolor = "white", 
+                           bordercolor = "black",
+                           align = "left",
+                           persistent = TRUE),
+         hovertemplate = "%{text}<extra></extra>") %>%
+  layout(title = list(text = "Top 10 Spotify Songs", x = 0.5, y = 0.95, xanchor = "center", yanchor = "top"))
+
+fig_globaltop10tracks
+```
+:::
+
+\
+
+```{=html}
+<div class="insights">
+  <span style="font-weight:bold; font-size:1.2em;"> Food for Thought </span>
+    <span>
+    <br>
+    Here's a captivating insight from these figures: the masterminds behind the top 10 songs are not necessarily the same as the artists in the overall top 10 list. Could it be that these song creators gained prominence largely through a single blockbuster hit? This intriguing contrast hints at a potential difference between short-term and long-term popularity.
+  </span>
+</div>
+```
+\
+With that in mind, let's delve into the enchanting world of song attributes!
+
+### Distribution of Song Attributes
+
+Song attributes are like the unique ingredients that shape a song's personality. They work together to create the diverse and colorful world of music, making each song distinct and captivating in its own way. Here is a description of the song attributes used in this data set:
+
+::: {.callout-note appearance="simple"}
+The source for these attributes' descriptions can be found [here](https://developer.spotify.com/documentation/web-api/reference/get-several-audio-features).
+:::
+
+| Attribute        | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+|-----------------------|------------------------------------------------|
+| Acousticness     | A confidence measure of whether the track is acoustic. 1.0 represents high confidence the track is acoustic.                                                                                                                                                                                                                                                                                                                                                                                           |
+| Danceability     | How suitable a track is for dancing based on a combination of musical elements including tempo, rhythm stability, beat strength, and overall regularity.                                                                                                                                                                                                                                                                                                                                               |
+| Duration         | The song duration in seconds.                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Energy           | Represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy. Perceptual features contributing to this attribute include dynamic range, perceived loudness, timbre, onset rate, and general entropy. For example, death metal has high energy, while a Bach prelude scores low on the scale.                                                                                                                                                      |
+| Instrumentalness | Predicts whether a track contains no vocals. 'Ooh' and 'aah' sounds are treated as instrumental in this context. Rap or spoken word tracks are clearly 'vocal'. The closer the instrumentalness value is to 1.0, the greater likelihood the track contains no vocal content. Values above 0.5 are intended to represent instrumental tracks, but confidence is higher as the value approaches 1.0.                                                                                                     |
+| Key              | Represents what key the song is in.                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Liveness         | Detects the presence of an audience in the recording. Higher liveness values represent an increased probability that the track was performed live. A value above 0.8 provides strong likelihood that the track is live.                                                                                                                                                                                                                                                                                |
+| Loudness         | The overall loudness of a track in decibels (dB). Loudness is the quality of a sound that is the primary psychological correlate of physical strength (amplitude). Loudness values are averaged across the entire track. Values typically range between -60 and 0 dB. The more negative the value, the louder the song is.                                                                                                                                                                             |
+| Mode             | Indicates the modality (major or minor) of a song, the type of scale from which its melodic content is derived.                                                                                                                                                                                                                                                                                                                                                                                        |
+| Speechiness      | Detects the presence of spoken words in a track. The more exclusively speech-like the recording (e.g. talk show, audio book, poetry), the closer to 1.0 the attribute value. Values above 0.66 describe tracks that are probably made entirely of spoken words. Values between 0.33 and 0.66 describe tracks that may contain both music and speech, either in sections or layered, including such cases as rap music. Values below 0.33 most likely represent music and other non-speech-like tracks. |
+| Tempo            | The overall estimated tempo of a track in beats per minute (BPM). In musical terminology, tempo is the speed or pace of a given piece. This is directly derived from the average beat duration.                                                                                                                                                                                                                                                                                                        |
+| Valence          | Describes the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).                                                                                                                                                                                                                                                                                 |
+
+: Description of Song Attributes {.striped .hover}
+
+With this knowledge, it's your turn to explore the interface below and uncover thesong attribute distributions!
+
+<iframe height="800" width="100%" frameborder="no" src="https://howeini.shinyapps.io/AttributeDist/">
+
+</iframe>
+
+::: {.callout-tip appearance="simple"}
+In the overarching melody of January 2022, prevailing songs boast the following characteristics:
+
+-   Danceable
+-   Exhibiting Moderate to High Energy
+-   Sparse in Speech Elements
+-   Leaning towards Non-acoustic Tones
+-   Highly Probable Vocal Presence
+-   Unlikely to be a Live Performance
+-   Balancing Positive and Negative Vibes
+-   Resonating in the C♯/D♭ Key
+-   Harmonising with the Major Scale
+-   Settling into a Standard Volume Range
+-   Showcasing a Varied Pace
+-   Clocking in at Approximately 3 Minutes in Length
+:::
+
+## Exploring Popularity Dynamics
+
+To delve into the intricacies of song popularity, our analysis unfolds along the lines of long-term and short-term dynamics.
+
+### Understanding Long-term Popularity
+
+Long-term popularity is gauged by a song's total streams throughout January, encompassing all charts. Songs with enduring appeal possess what we might call "timeless" attributes --- characteristics we seek to unearth in our analysis.
+
+Explore the tabs below to unfold the correlation and feature importance analyses, which can help you analyse the relationship between total streams and song attributes!
+
+::: panel-tabset
+## Correlation Matrix
+
+::: {.callout-note appearance="simple"}
+The correlation coefficient has 2 important features:
+
+-   **Sign (positive/negative):** Positive correlation indicates that as attribute value increase, the total streams of the song tend to follow suit. Conversely, a negative correlation signals a decline in total streams as the attribute value rises.
+
+-   **Magnitude (value):** Values closer to 1 (or -1) represent stronger correlations.
+:::
+
+```{r}
+#| out.width: "90%"
+#| label: fig-corrlt
+#| fig-cap: Correlation Matrix Between Total Streams and Attributes
+library(plotly)
+
+global <- spotify %>% 
+  filter(country == "Global") %>% 
+  group_by(track_name) %>% 
+  mutate(song_total_streams = sum(streams)) %>% 
+  distinct(track_name, .keep_all = TRUE)
+
+# Compute the correlation matrix
+correlation_matrix <- cor(global[, c("danceability", "energy", "key", "mode", "loudness", "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo", "duration", "song_total_streams")])
+
+# Create interactive heatmap using plot_ly
+heatmap <- plot_ly(
+  x = colnames(correlation_matrix),
+  y = colnames(correlation_matrix),
+  z = correlation_matrix,
+  type = "heatmap",
+  colorscale = "Portland",
+  colorbar = list(title = "Correlation"),
+  text = correlation_matrix,
+  hoverinfo = "text"
+)
+
+# Show the interactive heatmap
+heatmap
+```
+
+## Feature Importance
+
+::: {.callout-note appearance="simple"}
+A **Random Forest model**, a powerful machine learning algorithm, excels in **precise predictions** by employing multiple decision trees, each contributing to the final outcome. Here, **Feature Importance** signifies the evaluation of each input factor's significance in prediction-making.
+
+The accompanying bar chart depicts the calculated Feature Importance with **total streams as the target variable**. A high Feature Importance denotes that specific factors, like tempo or valence, wield considerable influence over the model's decision process.
+:::
+
+```{r, eval=TRUE}
+# Load required libraries
+library(randomForest)
+library(ggplot2)
+
+global <- spotify %>% 
+  filter(country == "Global") %>% 
+  group_by(track_name) %>% 
+  mutate(song_total_streams = sum(streams)) %>% 
+  distinct(track_name, .keep_all = TRUE) %>%
+  select(song_total_streams, track_name, danceability, energy, key, mode,
+         loudness, speechiness, acousticness, instrumentalness, liveness,
+         valence, tempo, duration)
+
+global <- subset(global, select = -c(track_name))
+
+# Assuming your_data is your dataset with appropriate columns and preprocessing done
+
+# Assuming 'total_streams' and 'chart_rankings' are your target variables
+target_variables <- c("song_total_streams")
+
+# Prepare predictors (independent variables)
+predictors <- setdiff(names(global), "song_total_streams")
+
+# Train a Random Forest model for each target variable and plot feature importance
+
+rf_model <- randomForest(as.formula(paste("song_total_streams", "~", 
+                                          paste(predictors, collapse = " + "))), data = global)
+  
+  # Print feature importance
+  #print(importance(rf_model))
+  
+  importance_df <- as.data.frame(importance(rf_model))
+  importance_df$Attribute <- rownames(importance_df) # Make a new column using the row names
+
+  #glimpse(importance_df)
+```
+
+```{r, eval=TRUE}
+#| out.width: "90%"
+#| label: fig-implt
+#| fig-cap: Feature Importance for Total Streams
+tsfi <- ggplot(importance_df) + 
+  aes(x = IncNodePurity, y= Attribute,
+      text = paste("Feature Importance:", IncNodePurity)) + 
+  geom_col() +
+  labs(x = "Value of Feature Importance for Total Streams")
+
+tsfi <- ggplotly(tsfi, tooltip = "text")
+
+tsfi
+```
+:::
+
+\
+
+```{=html}
+<div class="insights">
+  <span style="font-weight:bold; font-size:1.2em;"> Unveiling Insights </span>
+    <span>
+    <br> Tempo, valence, and danceability are crucial, showing both high importance and positive correlations with total streams. Conversely, mode, acousticness, and instrumentalness, while demonstrating negative correlations in the matrix, are moderately important, suggesting a nuanced relationship. <br> <br> Energetic, positive, and danceable songs consistently elevate popularity, underscoring the necessity for a comprehensive understanding of these elements in shaping song streaming dynamics. Simultaneously, songs in minor keys, less acoustic in nature, and enriched with instrumental content may also contribute to popularity, as indicated by the model.
+  </span>
+</div>
+```
+### Understanding Short-term Popularity
+
+One way to analyse short-term popularity is through rank changes. A negative value indicates a rise, while a positive value signals a fall in the charts. The magnitude of the integer reflects the extent of the change. We also examine peak rank and weeks on the chart for a comprehensive view of short-term popularity dynamics.
+
+::: {.callout-important appearance="simple"}
+Rank change is calculated by subtracting the previous rank from the current rank. It's important to note that a lower rank is better, with 1 being the highest!
+:::
+
+::: panel-tabset
+## Correlation Matrix
+
+::: {.callout-note appearance="simple"}
+The correlation coefficient has 2 important features:
+
+-   **Sign (positive/negative):** Positive correlation indicates that as attribute value increase, the total streams of the song tend to follow suit. Conversely, a negative correlation signals a decline in total streams as the attribute value rises.
+
+-   **Magnitude (value):** Values closer to 1 (or -1) represent stronger correlations.
+:::
+
+```{r}
+#| out.width: "90%"
+#| label: fig-corrst
+#| fig-cap: Correlation Matrix Between Change in Rank, Peak Rank, Weeks on Chart and Attributes
+
+library(plotly)
+global <- spotify %>% 
+  filter(country == "Global") %>% 
+  group_by(track_name) %>% 
+  mutate(track_total_streams = sum(streams),
+         change_rank = rank - previous_rank) %>% 
+  distinct(track_name, .keep_all = TRUE)
+
+# Compute the correlation matrix
+correlation_matrix <- cor(global[, c("danceability", "energy", "key", "mode", "loudness", "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo", "duration", "change_rank", "peak_rank", "weeks_on_chart")])
+
+# Create interactive heatmap using plot_ly
+heatmap <- plot_ly(
+  x = colnames(correlation_matrix),
+  y = colnames(correlation_matrix),
+  z = correlation_matrix,
+  type = "heatmap",
+  colorscale = "Portland",
+  colorbar = list(title = "Correlation"),
+  text = correlation_matrix,
+  hoverinfo = "text"
+)
+
+# Show the interactive heatmap
+heatmap
+```
+
+## Feature Importance
+
+```{r, eval=TRUE}
+# Load required libraries
+library(randomForest)
+library(ggplot2)
+
+global <- spotify %>% 
+  filter(country == "Global") %>% 
+  group_by(track_name) %>% 
+  mutate(track_total_streams = sum(streams),
+         change_rank = rank - previous_rank) %>% 
+  distinct(track_name, .keep_all = TRUE) %>%
+  select(change_rank, peak_rank, weeks_on_chart, track_name, danceability, energy, key, mode,
+         loudness, speechiness, acousticness, instrumentalness, liveness,
+         valence, tempo, duration)
+
+
+
+# Assuming your_data is your dataset with appropriate columns and preprocessing done
+
+# Assuming 'total_streams' and 'chart_rankings' are your target variables
+target_variables <- c("change_rank, peak_rank, weeks_on_chart")
+
+
+change <- subset(global, select = -c(track_name, peak_rank, weeks_on_chart))
+# Prepare predictors (independent variables)
+change_predictors <- setdiff(names(change), "change_rank")
+
+# Train a Random Forest model for each target variable and plot feature importance
+
+change_rf_model <- randomForest(as.formula(paste("change_rank", "~", 
+                                          paste(change_predictors, collapse = " + "))), data = change)
+  
+  # Print feature importance
+  #print(importance(rf_model))
+  
+  change_importance_df <- as.data.frame(importance(change_rf_model))
+  change_importance_df$Attribute <- rownames(change_importance_df) # Make a new column using the row names
+  
+  
+  
+  
+  
+  
+  peak <- subset(global, select = -c(track_name, change_rank, weeks_on_chart))
+  peak_predictors <- setdiff(names(peak), "peak_rank")
+
+# Train a Random Forest model for each target variable and plot feature importance
+
+  peak_rf_model <- randomForest(as.formula(paste("peak_rank", "~", 
+                                          paste(peak_predictors, collapse = " + "))), data = peak)
+  
+  # Print feature importance
+  #print(importance(rf_model))
+  
+  peak_importance_df <- as.data.frame(importance(peak_rf_model))
+  peak_importance_df$Attribute <- rownames(peak_importance_df) # Make a new column using the row names
+
+  
+  
+  
+  
+  week <- subset(global, select = -c(track_name, change_rank, peak_rank))
+  week_predictors <- setdiff(names(week), "weeks_on_chart")
+
+# Train a Random Forest model for each target variable and plot feature importance
+
+  week_rf_model <- randomForest(as.formula(paste("weeks_on_chart", "~", 
+                                          paste(week_predictors, collapse = " + "))), data = week)
+  
+  # Print feature importance
+  #print(importance(rf_model))
+  
+  week_importance_df <- as.data.frame(importance(week_rf_model))
+  week_importance_df$Attribute <- rownames(week_importance_df) # Make a new column using the row names
+```
+
+```{r, eval=TRUE}
+#| out.width: "90%"
+#| label: fig-impst
+#| fig-cap: Feature Importance for Change in Rank, Peak Rank and Weeks on Chart
+library(ggplot2)
+library(dplyr)
+library(plotly)
+
+# Assuming change_importance_df and peak_importance_df have a similar structure
+# Combine the two data frames
+combined_df <- bind_rows(
+  mutate(change_importance_df, target_variable = "change_rank"),
+  mutate(peak_importance_df, target_variable = "peak_rank"),
+  mutate(week_importance_df, target_variable = "weeks_on_chart")
+)
+
+# Create a clustered horizontal bar chart
+cfi <- ggplot(combined_df) +
+  aes(x = IncNodePurity, y = Attribute, fill = target_variable,
+      text = paste("Feature Importance:", IncNodePurity)) +
+  geom_col(position = "dodge") +
+  labs(x = "Value of Feature Importance for Total Streams")
+
+# Convert to plotly
+cfi <- ggplotly(cfi, tooltip = "text")
+
+# Show the plot
+cfi
+```
+:::
+
+\
+
+```{=html}
+<details>
+  <summary>Click here for a detailed analysis for each measure of short-term popularity.</summary>
+    
+    <h4>Change in Rank</h4>
+    Songs with <b>higher tempo and valence</b> exhibit a <b>more pronounced impact on changes in rank</b>, indicating that <b>faster-paced and more positive-sounding songs</b> are likely to experience significant shifts in their positions.
+
+Features like <b>speechiness and acousticness</b>, despite having notable importance, display negative correlations with changes in rank. This implies that songs with <b>more spoken words and an acoustic nature</b> are associated with <b>more stable rankings</b>.
+
+Loudness, although highly important, also exhibits a negative correlation, suggesting that <b>extreme volume levels may not contribute to significant changes</b> in a song's rank.
+    
+    <h4>Peak Rank</h4>
+
+<b>Danceability, energy, and loudness</b> emerge as highly important attributes, suggesting that songs with <b>energetic and danceable qualities, coupled with louder volumes,</b> are more likely to achieve higher peak ranks.
+
+Features like <b>instrumentalness and valence</b> exhibit positive correlations, indicating that songs with <b>more instrumental elements and positive emotional tones</b> tend to attain better peak rankings.
+
+<h4>Weeks on Chart</h4>
+
+<b>Danceability, energy, and acousticness</b> emerge as influential features, indicating that songs with <b>high danceability and energy, as well as a moderate level of acousticness,</b> are more likely to stay longer on the charts.
+
+<b>Speechiness and tempo</b> exhibit negative correlations, suggesting that songs with <b>lower speech content and slower tempos</b> tend to have a longer duration on the charts. The feature importance aligns with these correlations, highlighting the significance of <b>danceability, energy, and acousticness</b> in determining a song's sustained presence on streaming charts.
+
+</details>
+```
+```{=html}
+<div class="insights">
+  <span style="font-weight:bold; font-size:1.2em;"> Unveiling Insights </span>
+    <span>
+    <br> Across rank changes, peak rank, and weeks on chart, three key attributes consistently stand out in shaping a song's popularity dynamics. Danceability emerges as a central factor, positively impacting rank changes and peak rank, and showing influence on weeks spent on charts. Energy follows closely, demonstrating positive correlations with rank changes and peak rank, and significant importance for extended chart presence. Valence, reflecting the positivity of a song, consistently influences rank changes positively and correlates with a higher peak rank.
+  </span>
+</div>
+```
+### Summary
+
+In both the long and short term, 3 main attributes consistently influence a song's popularity: **danceability, energy, and valence**. Generally, songs that are energetic, positive, and danceable tend to perform well.
+
+However, when it comes to enduring popularity over the long term, additional factors like **mode, acousticness, and instrumentalness** become significant. Specifically, songs in minor keys or featuring more instrumental elements are considered "timeless," suggesting a lasting appeal that goes beyond current trends.
+
+## Comparing Global and Local Trends
+
+Studying local trends is essential in helping us understand what people love in different places, making the music experience more personal and relatable for everyone.
+
+The following analysis focuses on the 3 identified attributes that impact how popular songs become: **danceability, energy, and valence**. In **Asia**, people have a lower preference for songs that are easy to dance to. The **energy** level varies a lot across different places, indicating no clear local trends. In terms of **valence**, **Canada** consistently leans towards super positive tunes.
+
+<iframe height="800" width="100%" frameborder="no" src="https://howeini.shinyapps.io/WorldMap/">
+
+</iframe>
+
+## Decoding Musical Success: Final Insights
+
+```{=html}
+<div class="insights">
+  <span style="font-weight:bold; font-size:1em;"> What factors shape the popularity of songs in today's diverse music landscape? </span>
+</div>
+```
+\
+As seen in [Exploring Popularity Dynamics], a song's success ultimately involves an intricate interplay between global proclivities and localised nuances. The consistent sway of danceability, energy, and valence over a song's trajectory, be it in the short or long term, is undeniably significant. This holds profound implications for artists and marketers seeking resonance with diverse audiences. Moreover, the identification of songs in minor keys or enriched with instrumental elements as possessing a timeless quality speaks to the transcendence of these compositions beyond transient trends, reflecting the collective sentiment of society.
+
+The comparative analysis of global and local trends offers intriguing insights. Notably, the lower preference for highly danceable songs in Asia and Canada's strong affinity for positive songs sparks questions about the influence of culture and values on musical tastes and preferences.
+
+While the intricacies of song popularity are undoubtedly multifaceted, this analysis aspires to offer a thought-provoking perspective on the dynamic interplay of musical elements that resonate with audiences worldwide.

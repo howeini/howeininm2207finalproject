@@ -1,0 +1,16 @@
+---
+title: "Week 8 Code Along + Challenge"
+author: "Ho Wei Ni"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+In the side panel, I input the alphabet at different heading levels and inserted an image. In the main panel, I inserted paragraphs of text, including images and gifs, and played around with the displays of texts (based on colour, font size, font).
+```{r, out.height= "350px",out.width= "400px",echo=TRUE,eval=TRUE,fig.cap="Screenshot of my App Dashboard"}
+knitr::include_graphics("/Users/howeini/Desktop/NUS/NM2207/Week 8/Screenshot 2023-10-09 at 7.36.42 PM.png") 
+```

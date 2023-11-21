@@ -1,0 +1,112 @@
+---
+title: "Week 9 Code-Along + Challenge"
+author: "Ho Wei Ni"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Create non-tidy dataset
+```{r, eval=TRUE, echo=TRUE}
+library(tidyverse)
+nontidydata <- tribble(
+  ~country,~year,~rate,
+  "Afghanistan", 1999, "745/19987071",
+  "Afghanistan", 2000, "2666/20595360",
+  "Brazil", 1999, "37737/172006362",
+  "Brazil", 2000, "80488/174504898",
+  "China", 1999, "212258/1272915272",
+  "China", 2000, "213766/1280428583")
+```
+
+## Separate value into 2 columns
+```{r, eval=TRUE, echo=TRUE}
+tidieddata <- nontidydata %>%
+    separate(rate, into = c("cases",
+    "population"),
+    sep = "/")
+tidieddata
+```
+
+## Pivot longer
+```{r, eval=TRUE, echo=TRUE}
+newtidieddata <- tidieddata %>%
+  pivot_longer(
+  cols = cases:population,
+  names_to = "measurement",
+  values_to = "value"
+  )
+newtidieddata
+```
+
+## Pivot wider
+```{r, eval=TRUE, echo=TRUE}
+newtidieddata %>%
+  pivot_wider(names_from="measurement",
+              values_from="value")
+
+newtidieddata
+```
+
+## Scraping Data
+```{r, eval=TRUE, echo=TRUE}
+library(rvest)
+webpage <- read_html("https://books.toscrape.com")
+print(webpage) # Elements of webpage
+table <- html_elements(webpage, "body")
+```
+
+
+## Using APIs
+
+```{r, eval=TRUE,echo=TRUE}
+library(httr)
+library(jsonlite)
+
+## current data
+current_county_data_url <- "https://api.covidactnow.org/v2/counties.csv?apiKey=ea6df3c7725e4e858d5c4ee639e25975"
+
+## historic data
+historic_county_data_url <-
+"https://api.covidactnow.org/v2/counties.timeseries.csv?apiKey=ea6df3c7725e4e858d5c4ee639e25975"
+
+## individual location data
+individual_loc_data_url <-
+"https://api.covidactnow.org/v2/county/{state}.csv?apiKey=ea6df3c7725e4e858d5c4ee639e25975"
+
+current_county_data_url <- "https://api.covidactnow.org/v2/counties.csv?apiKey=ea6df3c7725e4e858d5c4ee639e25975"
+raw_data <- GET(current_county_data_url)
+raw_data$status
+head(raw_data$content)
+```
+
+## Challenge
+
+## Question 1
+```{r, eval=TRUE, echo=TRUE}
+newbillboard <- billboard %>%
+  pivot_longer(
+  cols = starts_with("wk"),
+  names_to = "week",
+  values_to = "rank",
+  values_drop_na = TRUE,) %>%
+      mutate(week = parse_number(week))
+
+ggplot(newbillboard, aes(x = week, y = rank)) +
+  geom_line() +
+  labs(x = "Week", y = "Rank") +
+  ggtitle("Billboard Song Ranks Over Weeks")
+```
+
+## Question 2
+```{r, eval=TRUE, echo=TRUE}
+newdata <- cms_patient_experience %>%
+  pivot_wider(names_from="measure_cd",
+              values_from="prf_rate",
+              id_cols = starts_with("org"))
+
+newdata
+```

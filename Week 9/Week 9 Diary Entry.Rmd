@@ -1,0 +1,19 @@
+---
+title: "Week 9 Diary Entry"
+author: "Ho Wei Ni"
+date: "`r Sys.Date()`"
+output: pdf_document
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## What is the topic that you have finalized?
+
+Answer: My finalized topic is on music. I plan to present a data story on the popularity of songs in different regions of the world based on the song attributes (e.g. danceability / energy / key / mode / loudness / speechiness / acousticness / instrumentalness / liveness / valence / tempo), genres and artists etc.
+ 
+## What are the data sources that you have curated so far?
+
+Answer: I will be using [this Spotify Dataset](https://www.kaggle.com/datasets/yelexa/spotify200) found on Kaggle. Since the data set is rather large, I will be using Radiant to filter data extracted during 2022 only. I will also be removing some variables e.g. collab / source / previous rank / pivot, that I have deemed irrelevant to my data story.
