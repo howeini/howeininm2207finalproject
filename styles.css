@@ -1,0 +1,35 @@
+/* black underlined hyperlinks */
+a {
+  color: black;
+  font-style: underline;
+}
+
+/* font size for Nav Bar */
+.navbar-brand{
+  font-size: 1.2rem;
+}
+
+/* font applied to all HTML elements */
+* {
+  font-family: "Verdana", Helvetica, Arial, sans-serif;
+}
+
+h2 {
+  font-size: 1.85rem;
+  color: #d9230f;
+}
+
+.insights {
+  background-color: #ebebeb; 
+  padding: 2rem;
+  border-radius: 0.25rem;
+}
+
+.table{
+  font-size: 0.8rem;
+}
+
+.panel-tabset {
+    border: 2px solid #d9230f; /* Replace 'your_color' with the desired color code */
+    border-radius: 0.25rem; /* Optional: Add border-radius for rounded corners */
+}

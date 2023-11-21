@@ -1,0 +1,536 @@
+---
+title: "Test"
+execute: 
+  eval: false
+  echo: false
+  warning: false
+engine: knitr
+---
+
+```{r, eval=TRUE}
+library(tidyverse)
+raw <- read_csv("Jan2022_Spotify_Weekly_Top_200_Songs_Streaming_Data_by_country_view_view.csv")
+
+spotify <- subset(raw, select = -c(X_1, artists_num, artist_genre, collab, album_num_tracks, pivot))
+```
+
+# Correlation Map
+
+```{r}
+library(corrplot)
+
+global <- spotify %>% 
+  filter(country == "Global") %>% 
+  group_by(track_name) %>% 
+  mutate(track_total_streams = sum(streams)) %>% 
+  distinct(track_name, .keep_all = TRUE)
+
+# Compute the correlation matrix
+correlation_matrix <- cor(global[, c("danceability", "energy", "key", "mode", "loudness", "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo", "duration", "track_total_streams", "peak_rank", "weeks_on_chart")])
+
+# Create heatmap
+corrplot(correlation_matrix, method = "color", tl.cex = 0.7,
+         addCoef.col = "black", # Add coefficient of correlation
+         tl.col="black" #Text label color and rotation
+         )
+```
+
+```{r, eval=TRUE}
+library(plotly)
+
+global <- spotify %>% 
+  filter(country == "Global") %>% 
+  group_by(track_name) %>% 
+  mutate(track_total_streams = sum(streams)) %>% 
+  distinct(track_name, .keep_all = TRUE)
+
+# Compute the correlation matrix
+correlation_matrix <- cor(global[, c("danceability", "energy", "key", "mode", "loudness", "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo", "duration", "track_total_streams", "peak_rank", "weeks_on_chart")])
+
+# Create interactive heatmap using plot_ly
+heatmap <- plot_ly(
+  x = colnames(correlation_matrix),
+  y = colnames(correlation_matrix),
+  z = correlation_matrix,
+  type = "heatmap",
+  colorscale = "Viridis",
+  colorbar = list(title = "Correlation"),
+  text = correlation_matrix,
+  hoverinfo = "text"
+)
+
+# Show the interactive heatmap
+heatmap
+
+```
+
+# randomForest Prediction (WORKS)
+
+```{r, eval=TRUE}
+# Load required libraries
+library(randomForest)
+library(ggplot2)
+
+# Assuming your_data is your dataset with appropriate columns and preprocessing done
+
+# Assuming 'total_streams' and 'chart_rankings' are your target variables
+target_variables <- c("track_total_streams", "weeks_on_chart")
+
+# Prepare predictors (independent variables)
+predictors <- setdiff(names(global), target_variables)
+
+# Train a Random Forest model for each target variable and plot feature importance
+for (target_var in target_variables) {
+  # Create and train the Random Forest model
+  rf_model <- randomForest(as.formula(paste(target_var, "~", paste(predictors, collapse = " + "))), data = global)
+  
+  # Print feature importance
+  print(paste("Feature Importance for", target_var))
+  print(importance(rf_model))
+}
+```
+
+# randomForest Prediction (test)
+
+```{r, eval=TRUE}
+# Load required libraries
+library(randomForest)
+library(ggplot2)
+
+global <- spotify %>% 
+  filter(country == "Global") %>% 
+  group_by(track_name) %>% 
+  mutate(track_total_streams = sum(streams)) %>% 
+  distinct(track_name, .keep_all = TRUE)
+# Assuming your_data is your dataset with appropriate columns and preprocessing done
+
+# Assuming 'total_streams' and 'chart_rankings' are your target variables
+target_variables <- c("track_total_streams", "weeks_on_chart")
+
+# Prepare predictors (independent variables)
+predictors <- setdiff(names(global), "track_total_streams")
+
+# Train a Random Forest model for each target variable and plot feature importance
+
+rf_model <- randomForest(as.formula(paste("track_total_streams", "~", 
+                                          paste(predictors, collapse = " + "))), data = global)
+  
+  # Print feature importance
+ # print(importance(rf_model))
+  
+  importance_df <- as.data.frame(importance(rf_model))
+  importance_df$Attribute <- rownames(importance_df) # Make a new column using the row names
+
+  glimpse(importance_df)
+```
+
+```{r, eval=TRUE}
+ggplot(importance_df) + 
+  aes(x = IncNodePurity, y= Attribute) + 
+  geom_col()
+```
+
+# Make clickable bar graph with girafe https://github.com/jfrench/DataWrangleViz/blob/master/06-interactive-graphics-ggiraph.Rmd#L215
+
+```{r}
+# add variable that would perform a google search for each observation's cut
+diamonds <- diamonds |>
+  mutate(bar_google = paste0("https://www.google.com/search?q=diamond+cut+", as.character(cut)))
+# look at first 3 values in bar_google
+diamonds |> select(bar_google) |> print(n = 3)
+```
+
+Next, we add another variable, `bar_onclick` to the `diamonds` data frame to add the `window.open(" ... ")` part of the `onlick` command to the `bar_google` variable. We use the `paste0` function and a series of single and double quotes to get the desired format.
+
+```{r}
+# add column that actually performs the google search on click
+diamonds <- diamonds |>
+  mutate(bar_onclick = paste0('window.open("', bar_google,'")'))
+# look at first 3 values in bar_onclick
+diamonds |> select(bar_onclick) |> print(n = 3)
+```
+
+Lastly, we map the `bar_onclick` variable to the `onclick` aesthetic in our interactive bar chart so that when the user clicks a bar, a corresponding google search for that diamond cut is opened.
+
+```{r}
+# specify interactive bar chart that searches for the cut if associated bar clicked
+ibar_click <- ggplot(data = diamonds) + 
+  geom_bar_interactive(aes(x = cut, data_id = cut, tooltip = cut,
+                           onclick = bar_onclick))
+girafe(ggobj = ibar_click)
+```
+
+### Incorporated into mine, but cannot work in qmd
+
+```{r}
+library(ggplot2)
+library(ggiraph)
+
+# Load data and filter top 10 tracks for Global
+globaltop10tracks <- spotify %>% 
+  filter(country == "Global") %>% 
+  group_by(track_name) %>% 
+  mutate(track_total_streams = sum(streams)) %>% 
+  distinct(track_name, .keep_all = TRUE) %>% 
+  select(uri, track_name, artist_names, album_cover, track_total_streams) %>%
+  arrange(desc(track_total_streams)) %>%
+  head(n = 10)
+
+# Add a variable that performs a Google search for each track
+globaltop10tracks <- globaltop10tracks %>%
+  mutate(bar_google = paste0("https://www.google.com/search?q=", 
+                             gsub(" ", "+", uri)))
+
+# Add the window.open() logic to bar_google, replacing single quotes with double quotes
+globaltop10tracks <- globaltop10tracks %>%
+  mutate(bar_onclick = gsub("'", '"', paste0('window.open("', bar_google,'")')))
+
+# Create Top 10 Tracks plotly graph with clickable bars
+fig_globaltop10tracks <- ggplot(globaltop10tracks, 
+            aes(x = track_total_streams, 
+                y = fct_reorder(track_name, track_total_streams),
+                customdata = uri,
+                text = paste("</br>Total Streams:", track_total_streams,
+                             "</br>Artists:", str_wrap(artist_names, width = 50),
+                             "</br>Track Link: <a href=", uri, " target='_blank'>", uri, "</a>"),
+                onclick = bar_onclick)) +
+  geom_bar_interactive(stat = "identity") +
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_text(size = 8)) + 
+  labs(x = "Track Total Streams",
+       title = "Top 10 Tracks")
+
+# Make the plot interactive
+fig_globaltop10tracks <- girafe(ggobj = fig_globaltop10tracks)
+
+# Print the interactive plot
+print(fig_globaltop10tracks)
+```
+
+## Correlation matrix
+
+```{r}
+library(ggcorrplot)
+# Compute a correlation matrix 
+#corr <- cor(track_attribute1)
+#head(corr)
+```
+
+# Country map
+
+```{r}
+# Download the shapefile. (note that I store it in a folder called DATA. You have to change that if needed.)
+download.file("http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip" , destfile="DATA/world_shape_file.zip")
+# You now have it in your current working directory, have a look!
+
+# Unzip this file. You can do it with R (as below), or clicking on the object you downloaded.
+system("unzip DATA/world_shape_file.zip")
+#  -- > You now have 4 files. One of these files is a .shp file! (TM_WORLD_BORDERS_SIMPL-0.3.shp)
+```
+
+```{r, eval=TRUE}
+library(leaflet)
+# Initialize the leaflet map with the leaflet() function
+m <- leaflet() %>% addTiles() # Then we Add default OpenStreetMap map tiles
+m
+```
+
+```{r}
+# Read this shape file with the rgdal library. 
+library(rgdal)
+world_spdf <- readOGR( 
+  dsn= paste0(getwd(),"/DATA/world_shape_file/") , 
+  layer="TM_WORLD_BORDERS_SIMPL-0.3",
+  verbose=FALSE
+)
+
+# Clean the data object
+library(dplyr)
+world_spdf@data$POP2005[ which(world_spdf@data$POP2005 == 0)] = NA
+world_spdf@data$POP2005 <- as.numeric(as.character(world_spdf@data$POP2005)) / 1000000 %>% round(2)
+
+# -- > Now you have a Spdf object (spatial polygon data frame). You can start doing maps!
+
+```
+
+## https://www.datanovia.com/en/blog/how-to-create-a-map-using-ggplot2/
+
+```{r, eval=TRUE}
+world_map <- map_data("world")
+ggplot(world_map, aes(x = long, y = lat, group = group)) +
+  geom_polygon(fill="lightgray", colour = "white")
+```
+
+# To show as sliding carousel, but can't do the interatcive portion yet
+
+```{r}
+# Reference: https://gist.github.com/riinuots/dbbd3d473abb3628a0986fba5e517738
+fig_globaltop10tracks = xmlSVG({show(fig_globaltop10tracks)}, standalone = TRUE, height = 4, width = 4)  
+fig_globaltop10artists = xmlSVG({show(fig_globaltop10artists)}, standalone = TRUE, height = 4, width = 4)  
+slickR(list(fig_globaltop10tracks, fig_globaltop10artists), height = 400) + settings(dots = TRUE, autoplay = TRUE)
+```
+
+```{r, warning=FALSE, message=FALSE}
+# danceability, energy, speechiness, acousticness, instrumentalness, liveness, valence
+track_attribute1 <- spotify %>%
+  select(track_name, danceability, energy, speechiness, acousticness, 
+         instrumentalness, liveness, valence) %>%
+  distinct(track_name, .keep_all = TRUE) %>%
+  pivot_longer(cols= danceability:valence,
+               names_to = "attribute",
+               values_to = "value")
+track_attribute1
+```
+
+```{r, eval=TRUE}
+library(ggplot2)
+library(plotly)
+library(forcats)
+globaltop10tracks <- spotify %>% 
+  filter(country == "Global") %>% 
+  group_by(track_name) %>% 
+  mutate(track_total_streams = sum(streams)) %>% 
+  distinct(track_name, .keep_all = TRUE) %>% 
+  select(uri, track_name, artist_names, album_cover, track_total_streams) %>%
+  arrange(desc(track_total_streams)) %>%
+  head(globaltop10tracks, n=10)
+
+globaltop10artists <- spotify %>% 
+  filter(country == "Global") %>% 
+  group_by(artist_individual) %>% 
+  mutate(artist_total_streams = sum(streams)) %>% 
+  distinct(artist_individual, .keep_all = TRUE) %>%
+  select(artist_individual, artist_id, artist_img, artist_total_streams) %>%
+  arrange(desc(artist_total_streams)) %>%
+  head(globaltop10artists, n=10)
+
+# create plotly graph.
+
+?plot_ly
+
+fig_globaltop10tracks <- plot_ly(globaltop10tracks, 
+                                 x = ~track_total_streams, 
+                                 y = ~track_name,
+                                 type = 'bar')
+
+fig_globaltop10artists <- plot_ly(globaltop10artists, 
+                                 x = ~artist_total_streams, 
+                                 y = ~artist_individual,
+                                 type = 'bar')
+
+fig <- subplot(fig_globaltop10tracks, fig_globaltop10artists)
+fig
+```
+
+# Global data set, summarised by artists
+
+```{r, echo=FALSE}
+globaltop10artists <- spotify %>% 
+  filter(country == "Global") %>% 
+  group_by(artist_individual) %>% 
+  mutate(artist_total_streams = sum(streams)) %>% 
+  distinct(artist_individual, .keep_all = TRUE) %>%
+  select(artist_individual, artist_id, artist_img, artist_total_streams) %>%
+  arrange(desc(artist_total_streams)) %>%
+  head(globaltop10artists, n=10)
+
+fig_globaltop10artists <- ggplot(globaltop10artists, 
+            aes(x = artist_total_streams, 
+                y = fct_reorder(artist_individual, artist_total_streams),
+                text = paste("Total Streams:",artist_total_streams))) +
+  geom_col() +
+  labs(x="Track Total Streams", y="Artist",
+			title="Top 10 Artists in Jan")
+subplot(fig_globaltop10artists,fig_globaltop10tracks)
+```
+
+# Global top 10 songs based on week
+
+```{r, eval=FALSE}
+spotify %>% filter(country == "Global", week == "2022-01-27") %>% distinct(track_name, .keep_all = TRUE) %>% arrange(rank)
+```
+
+```{r, eval=TRUE}
+
+track_attribute1 <- spotify %>%
+      select(track_name, danceability, energy, speechiness, acousticness, instrumentalness, liveness, valence) %>%
+      distinct(track_name, .keep_all = TRUE) %>%
+      pivot_longer(cols= danceability:valence,
+                   names_to = "attribute",
+                   values_to = "value")
+
+fig_trackattributes <- ggplot(track_attribute1, aes(x = value)) +
+  geom_histogram(binwidth = 5000, alpha = 0.5) 
+```
+
+```{r}
+library(shiny)
+runExample("06_tabsets")    # tabbed panels
+```
+
+```{r}
+raw <- read_csv("Jan2022_Spotify_Weekly_Top_200_Songs_Streaming_Data_by_country_view_view.csv")
+spotify <- subset(raw, select = -c(X_1, artists_num, artist_genre, collab, album_num_tracks, pivot))
+    track_attribute1 <- spotify %>%
+      select(track_name, danceability, energy, speechiness, acousticness, instrumentalness, liveness, valence) %>%
+      distinct(track_name, .keep_all = TRUE) %>%
+      pivot_longer(cols= danceability:valence,
+                   names_to = "attribute",
+                   values_to = "value")
+    
+    
+      ggplot(data = track_attribute1, 
+             mapping = aes(x = value, fill=attribute)) + 
+        geom_histogram(aes(y = ..prop..),alpha=0.5) +
+        labs(y = "Frequency", title = "Frequency of Attribute")
+```
+
+# Code for top10 subplot
+
+```{r}
+#| out.width: "90%"
+#| label: fig-top101
+#| fig-cap: Overall Top 10 Spotify Tracks and Artists in January 2022
+
+# Manipulate data set to obtain top 10 tracks from the "Global" charts
+
+globaltop10tracks <- spotify %>% 
+  filter(country == "Global") %>% 
+  group_by(track_name) %>% 
+  mutate(track_total_streams = sum(streams)) %>% 
+  distinct(track_name, .keep_all = TRUE) %>% 
+  select(uri, track_name, artist_names, album_cover, track_total_streams) %>%
+  arrange(desc(track_total_streams)) %>%
+  head(globaltop10tracks, n=10)
+
+globaltop10artists <- spotify %>% 
+  filter(country == "Global") %>% 
+  group_by(artist_individual) %>% 
+  mutate(artist_total_streams = sum(streams)) %>% 
+  distinct(artist_individual, .keep_all = TRUE) %>%
+  select(artist_individual, artist_id, artist_img, artist_total_streams) %>%
+  arrange(desc(artist_total_streams)) %>%
+  head(globaltop10artists, n=10)
+
+# Create Top 10 Tracks plotly graph
+fig_globaltop10tracks <- ggplot(globaltop10tracks, 
+            aes(x = track_total_streams, 
+                y = fct_reorder(track_name, track_total_streams),
+                customdata = uri,
+                text = paste("</br>Total Streams:", track_total_streams,
+                             "</br>Artists:", str_wrap(artist_names, width = 50),
+                              "</br>Track Link: <a href=", uri, 
+                             " target='_blank'>", uri, "</a>"))) +
+  geom_col() +
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_text(size = 8)) + 
+  labs(x="Total Streams")
+
+fig_globaltop10tracks <- ggplotly(fig_globaltop10tracks, tooltip = "text") %>%
+  layout(hoverlabel = list(bgcolor = "white", 
+                           bordercolor = "black",
+                           align = "left",
+                           persistent = TRUE),
+         hovertemplate = "%{text}<extra></extra>")
+
+
+# Create Top 10 Artist plotly graph
+fig_globaltop10artists <- ggplot(globaltop10artists, 
+            aes(x = artist_total_streams, 
+                y = fct_reorder(artist_individual, artist_total_streams),
+                customdata = artist_id,
+                text = paste("</br>Total Streams:",artist_total_streams,
+                             "</br>Artist Link: <a href=", artist_id, 
+                             " target='_blank'>", artist_id, "</a>"))) +
+  geom_col() +
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_text(size = 8)) + 
+  labs(x="Total Streams")
+
+fig_globaltop10artists <- ggplotly(fig_globaltop10artists, tooltip = "text") %>%
+  layout(hoverlabel = list(bgcolor = "white", 
+                           bordercolor = "black",
+                           align = "left",
+                           persistent = TRUE),
+         hovertemplate = "%{text}<extra></extra>")
+
+subplot(fig_globaltop10tracks, fig_globaltop10artists, 
+        nrows = 2, widths = 1, margin =0.02,
+        shareX = TRUE) %>% 
+        layout(title = 'Top 10 Tracks and Artists in January 2022', position = "top center")
+```
+
+```{r}
+library(tidyverse)
+raw <- read_csv("Jan2022_Spotify_Weekly_Top_200_Songs_Streaming_Data_by_country_view_view.csv")
+
+spotify <- subset(raw, select = -c(X_1, artists_num, artist_genre, collab, album_num_tracks, pivot))
+
+track_attribute2 <- spotify %>%
+    select(track_name, key, mode) %>%
+    distinct(track_name, .keep_all = TRUE)
+
+  # Function to map integers to pitch names
+  map_to_pitch <- function(key) {
+    pitches <- c("C", "C♯/D♭", "D", "D♯/E♭", "E", "F", "F♯/G♭", "G", "G♯/A♭", "A", "A♯/B♭", "B")
+    return(pitches[key + 1])
+  }
+  
+  # Function to map integers to pitch names
+  map_to_mode <- function(scale) {
+    modes <- c("Minor", "Major")
+    return(modes[scale + 1])
+  }
+  
+  # Apply the function to create new columns
+  track_attribute2$key_alphabet <- sapply(track_attribute2$key, map_to_pitch)
+  track_attribute2$mode_word <- sapply(track_attribute2$mode, map_to_mode)
+  
+  track_attribute2 <- na.omit(track_attribute2)
+
+
+kb <- ggplot(track_attribute2, aes(x = key_alphabet)) + 
+      geom_bar() + 
+      labs(x= "Key", y="Count") + 
+      theme(axis.text.x = element_text(family = "Arial Unicode MS"))
+
+kb <- ggplotly(kb, tooltip = "y")
+kb
+
+
+mb <- track_attribute2 %>%
+  count(mode_word) %>%
+  plot_ly(labels = ~mode_word, values = ~n, type = 'pie') %>%
+  layout(title = "Pie Chart of Mode Distribution", showlegend = TRUE) %>%
+  add_trace(marker = list(colors = c('grey', 'lightgreen')))
+mb
+
+```
+
+```{r}
+library(plotly)
+library(corrplot)
+
+global2 <- spotify %>% 
+  group_by(track_name) %>% 
+  mutate(track_total_streams = sum(streams)) %>% 
+  distinct(track_name, .keep_all = TRUE)
+
+# Compute the correlation matrix
+correlation_matrix2 <- cor(global2[, c("danceability", "energy", "key", "mode", "loudness", "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo", "duration", "track_total_streams")])
+
+# Create interactive heatmap using plot_ly
+heatmap <- plot_ly(
+  x = colnames(correlation_matrix2),
+  y = colnames(correlation_matrix2),
+  z = correlation_matrix2,
+  type = "heatmap",
+  colorscale = "Portland",
+  colorbar = list(title = "Correlation"),
+  text = correlation_matrix,
+  hoverinfo = "text"
+)
+
+# Show the interactive heatmap
+heatmap
+```
