@@ -9,39 +9,20 @@ attribute_descriptions <- data.frame(
   attribute = c("danceability", "energy", "speechiness", "acousticness", 
                 "instrumentalness", "liveness", "valence"),
   description = c(
-    "How suitable a track is for dancing based on a combination of musical elements 
-    including tempo, rhythm stability, beat strength, and overall regularity.",
+    "Centered around a value of 0.75, majority of songs boast a considerable degree of danceability.",
     
-    "Represents a perceptual measure of intensity and activity. 
-    Typically, energetic tracks feel fast, loud, and noisy. 
-    For example, death metal has high energy, while a Bach prelude scores low on the scale. 
-    Perceptual features contributing to this attribute include dynamic range, perceived loudness, 
-    timbre, onset rate, and general entropy.",
+    "Although the majority of songs exhibit moderate to high energy levels,
+     the overall energy range is wide.",
     
-    "Speechiness detects the presence of spoken words in a track. 
-    The more exclusively speech-like the recording (e.g. talk show, audio book, poetry), 
-    the closer to 1.0 the attribute value. 
-    Values above 0.66 describe tracks that are probably made entirely of spoken words. 
-    Values between 0.33 and 0.66 describe tracks that may contain both music and speech,
-    either in sections or layered, including such cases as rap music. 
-    Values below 0.33 most likely represent music and other non-speech-like tracks.",
+    "Most songs are music and non-speech-like tracks.",
     
-    "A confidence measure of whether the track is acoustic. 
-    1.0 represents high confidence the track is acoustic.",
+    "Generally, there is low confidence that songs are acoustic.",
     
-    "Predicts whether a track contains no vocals. 
-    'Ooh' and 'aah' sounds are treated as instrumental in this context. 
-    Rap or spoken word tracks are clearly 'vocal'. 
-    The closer the instrumentalness value is to 1.0, the greater likelihood the track contains no vocal content. 
-    Values above 0.5 are intended to represent instrumental tracks, but confidence is higher as the value approaches 1.0.",
+    "Aside from a few anomalies, the songs contain vocals.",
     
-    "Detects the presence of an audience in the recording. 
-    Higher liveness values represent an increased probability that the track was performed live. 
-    A value above 0.8 provides strong likelihood that the track is live.",
+    "Aside from a few anomalies, the songs were not performed live.",
     
-    "Describes the musical positiveness conveyed by a track. 
-    Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), 
-    while tracks with low valence sound more negative (e.g. sad, depressed, angry)"
+    "While there are more songs that sound positive than negative, the distribution is relatively more balanced. "
   )
 )
 
@@ -97,6 +78,7 @@ ui <- navbarPage("Song Attributes",
                                             sliderInput("bins_loud", 
                                                         label = h4("Number of Bins:"),
                                                         min = 1, max = 50, value = 25))),
+                            br(),
                             fluidRow(htmlOutput("loud_desc")),
                             
                             hr(),
@@ -108,6 +90,7 @@ ui <- navbarPage("Song Attributes",
                                             sliderInput("bins_tempo", 
                                                         label = h4("Number of Bins:"),
                                                         min = 1, max = 50, value = 25))),
+                            br(),
                             fluidRow(htmlOutput("tempo_desc")),
                             
                             hr(),
@@ -119,6 +102,7 @@ ui <- navbarPage("Song Attributes",
                                             sliderInput("bins_dur", 
                                                         label = h4("Number of Bins:"),
                                                         min = 1, max = 50, value = 25))),
+                            br(),
                             fluidRow(htmlOutput("dur_desc"))
                             )
                  ),
@@ -137,13 +121,13 @@ ui <- navbarPage("Song Attributes",
                               column(width = 6,
                                      
                                      h3("Key"),
-                                     p("Represents what key the song is in"),
+                                     p("C♯/D♭ is the most popular key, followed by C then G."),
                                      plotlyOutput("key_bar")),
                               
                               column(width = 6,
                                      
                                      h3("Mode"),
-                                     p("Indicates the modality of a song, the type of scale from which its melodic content is derived"),
+                                     p("While there are more songs in Major scale than Minor scale, the distribution is relatively balanced."),
                                      plotlyOutput("mode_pie")))
                             
                            
@@ -300,12 +284,7 @@ server <- function(input, output) {
   
   output$loud_desc <- renderUI({
     text <- "
-            <ul> <li> The overall loudness of a track in decibels (dB) </li>
-            <li> Loudness is the quality of a sound that is the primary psychological correlate of physical strength (amplitude) </li>
-            <li> Loudness values are averaged across the entire track </li>
-            <li> This makes it useful for comparing relative loudness of tracks </li>
-            <li> Values typically range between -60 and 0 dB </li> 
-            <li> The more negative the value, the louder the song is </li> </ul>"
+            <ul><li> Most songs have average volumes. </li></ul>"
     HTML(text)
   })
   
@@ -320,9 +299,7 @@ server <- function(input, output) {
   })
   
   output$tempo_desc <- renderText({
-    text <- "<ul> <li> The overall estimated tempo of a track in beats per minute (BPM) </li>
-             <li> In musical terminology, tempo is the speed or pace of a given piece </li> 
-             <li> This is directly derived from the average beat duration </li> </ul>"
+    text <- "<ul> <li> Most songs have around 100-150 beats per minute (BPM). </li></ul>"
     HTML(text)
   })
   
@@ -337,7 +314,7 @@ server <- function(input, output) {
   })
   
   output$dur_desc <- renderText({
-    text <- "<ul> <li> The song duration in seconds  </li> </ul>"
+    text <- "<ul> <li> Most songs are around 3 minutes long, though there are some anomalies.  </li> </ul>"
     HTML(text)
   })
   
