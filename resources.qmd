@@ -49,7 +49,7 @@ On [Github](https://github.com/howeini/NM2207), you can find all my Code-Along d
 
 ## Week 10
 - Exploring data set to see how I can answer the data story question
-- Exporing **plotly** to make ggplot interactive
+- Exploring **plotly** to make ggplot interactive
 - Embedding Shiny into Quarto
 - Plotting different charts based on inputs in Shiny
 
